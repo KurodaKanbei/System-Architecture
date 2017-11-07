@@ -16,7 +16,7 @@
  *
  */
 
-`include "adder.v"
+`include "adder2.v"
 
 module test_adder;
 	wire [15:0] answer;
