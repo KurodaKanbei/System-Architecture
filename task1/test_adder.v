@@ -1,3 +1,4 @@
+
 /* ACM Class System (I) 2017 Fall Homework 1 
  *
  * Part I: Write an adder in Verilog
@@ -15,12 +16,12 @@
  *
  */
 
+`include "adder.v"
+
 module test_adder;
 	wire [15:0] answer;
-	reg  [15:0] a, b;
-
-	adder adder (a, b, answer);
-	
+	reg[15:0]  a, b;
+	adder adder(a, b, answer);
 	integer i;
 	initial begin
 		for(i=1; i<=100; i=i+1) begin
@@ -33,7 +34,8 @@ module test_adder;
 			$display("TESTCASE %d: %d + %d = %d", i, a, b, answer);
 
 			if (answer !== a + b) begin
-				$fatal("Wrong Answer!");
+				//$fatal("Wrong Answer!");
+				$finish;
 			end
 		end
 		$display("Congratulations! You have passed all of the tests.");
