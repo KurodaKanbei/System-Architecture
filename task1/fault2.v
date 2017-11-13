@@ -43,6 +43,9 @@ endmodule
 
 module fault(a,b,answer);
 	input wire[15:0] a,b;
-	output wire[15:0] answer;
-	assign answer = (a > b) ? a : b;
+	output reg[15:0] answer;
+	always 
+		@ (a or b) begin
+			if (a > b) answer = a; else answer = b;
+		end
 endmodule
