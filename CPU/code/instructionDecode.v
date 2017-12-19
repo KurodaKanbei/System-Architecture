@@ -8,7 +8,7 @@ module instructionDecode(
 
 	output reg[6:0] operatorType,
 	output reg[2:0] operatorSubType,
-	output reg[6:0] operatorFlag,
+	output reg operatorFlag,
 	output reg[31:0] data1,
 	output reg[31:0] data2,
 	output reg[31:0] instr_out,
@@ -47,7 +47,7 @@ always @(posedge decodePulse) begin
 	regstatusEnable = 1'b0;
 	operatorType = 7'b1111111;
 	operatorSubType = 3'b111;
-	operatorFlag = 7'b1111111;
+	operatorFlag = 1'b1;
 	ava = available;
 	notfull = ava;
 	if (ava == 1'b1) begin
@@ -99,7 +99,7 @@ always @(posedge decodePulse) begin
 			reg1 = instr[19:15];
 			if (operatorSubType == 3'b001 || operatorSubType == 3'b101) begin
 				data1 = instr[24:20];
-				operatorFlag = instr[31:25];
+				operatorFlag = instr[30];
 			end else data1 = instr[31:20];
 		end
 		if (operatorType == CalcOp) begin
@@ -107,7 +107,7 @@ always @(posedge decodePulse) begin
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			operatorFlag = instr[31:25];
+			operatorFlag = instr[30];
 		end
 		if (operatorType == FenceOp) begin
 			operatorSubType = instr[14:12];
