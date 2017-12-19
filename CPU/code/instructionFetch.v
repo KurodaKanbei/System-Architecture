@@ -7,13 +7,14 @@ module instructionFetch (
 ); 
 
 parameter size = 1 << 7;
-
-reg [31:0] mem[0:size - 1];
-
-integer i;
+reg[31:0] mem [0:size - 1];
+integer i;	
 
 initial begin
-	$readmemb("instruction", mem, 0);
+	$readmemh("instruction", mem, 0);
+	for (i = 0; i < size; i = i + 1) begin
+		mem[i] = {mem[i][7:0] | mem[i][15:8] | mem[i][23:16] | mem[i][31:24]};		
+	end
 	isdone = 0;
 end
 
