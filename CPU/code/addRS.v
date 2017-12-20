@@ -65,7 +65,7 @@ parameter Srl = 3'b101;
 parameter Sra = 3'b101;
 parameter Or = 3'b110;
 parameter And = 3'b111;
-parameter invalidNum = 6'b111111;
+parameter invalidNum = 6'b100000;
 
 reg[93:0] rs[0:3];
 
@@ -129,10 +129,42 @@ always @(posedge clock) begin
 						if (rs[i][76:76] == 1'b0) data_out = rs[i][75:44] + rs[i][43:12]; else data_out = rs[i][75:44] - rs[i][43:12];	
 					end
 					if (rs[i][79:77] == Sll) begin
-						
+						data_out = rs[i][75:44] << rs[i][43:12];						
 					end
+					if (rs[i][79:77] == Srl) begin
+						data_out = rs[i][75:44] >> rs[i][43:12];
+					end
+					/* to be continued*/
+					broadcast = 1'b1;
+					available = 1'b1;
+					breakmark = 1'b1;
 				end
 			end
+		end
+	end
+end
+
+reg[31:0] data1_tmp;
+reg[5:0] q1_tmp;
+reg[31:0] data2_tmp;
+reg[5:0] q2_tmp;
+
+always @(posedge functionEnable) begin
+	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
+		index = q1;
+		#0.01
+		data1_tmp = data1;
+		q1_tmp = q1;
+		if (index < 32 && ready == 1'b1) begin
+			data1_tmp = value;
+			q1_tmp = invalidNum;
+		end
+		index= q2;
+		#0.01
+		data2_tmp = data2;
+		q2_tmp = q2;
+		if (index < 32 && ready == 1'b1) begin
+			data2_tmp = value;	
 		end
 	end
 end
