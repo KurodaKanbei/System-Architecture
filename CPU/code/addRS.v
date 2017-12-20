@@ -65,7 +65,7 @@ parameter Srl = 3'b101;
 parameter Sra = 3'b101;
 parameter Or = 3'b110;
 parameter And = 3'b111;
-parameter invalidNum = 6'b100000;
+parameter invalidNum = 6'b010000;
 
 reg[93:0] rs[0:3];
 
@@ -149,13 +149,13 @@ reg[5:0] q1_tmp;
 reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
-always @(posedge functionEnable) begin
+always @(posedge funcUnitEnable) begin
 	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
 		index = q1;
 		#0.01
 		data1_tmp = data1;
 		q1_tmp = q1;
-		if (index < 32 && ready == 1'b1) begin
+		if (index < 16 && ready == 1'b1) begin
 			data1_tmp = value;
 			q1_tmp = invalidNum;
 		end
@@ -163,7 +163,7 @@ always @(posedge functionEnable) begin
 		#0.01
 		data2_tmp = data2;
 		q2_tmp = q2;
-		if (index < 32 && ready == 1'b1) begin
+		if (index < 16 && ready == 1'b1) begin
 			data2_tmp = value;	
 		end
 	end
