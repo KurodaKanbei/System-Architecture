@@ -14,7 +14,8 @@
 
 module addRS (
 	input wire clock,
-	input wire[2:0] operatorType,
+	input wire[7:0] operatorType,
+	input wire[2:0] operatorSubType,
 	input wire operatorFlag, 
 	input wire[5:0] robNum,
 	input wire[31:0] data1,
@@ -131,10 +132,24 @@ always @(posedge clock) begin
 					if (rs[i][79:77] == Sll) begin
 						data_out = rs[i][75:44] << rs[i][43:12];						
 					end
-					if (rs[i][79:77] == Srl) begin
-						data_out = rs[i][75:44] >> rs[i][43:12];
+					if (rs[i][79:77] == Slt) begin
+						data_out = $signed(rs[i][75:44]) < $signed(rs[i][43:12]) ? 32'b1 : 32'b0;
 					end
-					/* to be continued*/
+					if (rs[i][79:77] == Sltu) begin
+						data_out = rs[i][75:44] < rs[i][43:12] ? 32'b1 : 32'b0;
+					end
+					if (rs[i][79:77] == Srl) begin
+						if (rs[i][76] == 1'b0) data_out = rs[i][75:44] >> rs[i][43:12]; else data_out = $signed(rs[i][75:44]) >>> rs[i][43:12];
+					end
+					if (rs[i][79:77] == Xor) begin
+						data_out = rs[i][75:44] ^ rs[i][43:12];
+					end
+					if (rs[i][79:77] == Or) begin
+						data_out = rs[i][75:44] | rs[i][43:12];
+					end
+					if (rs[i][79:77] == And) begin
+						data_out = rs[i][75:44] & rs[i][43:12];
+					end
 					broadcast = 1'b1;
 					available = 1'b1;
 					breakmark = 1'b1;
@@ -152,7 +167,6 @@ reg[5:0] q2_tmp;
 always @(posedge funcUnitEnable) begin
 	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
 		index = q1;
-		#0.01
 		data1_tmp = data1;
 		q1_tmp = q1;
 		if (index < 16 && ready == 1'b1) begin
@@ -160,11 +174,30 @@ always @(posedge funcUnitEnable) begin
 			q1_tmp = invalidNum;
 		end
 		index= q2;
-		#0.01
 		data2_tmp = data2;
 		q2_tmp = q2;
 		if (index < 16 && ready == 1'b1) begin
 			data2_tmp = value;	
+		end
+		breakmark = 1'b0;
+		for (i = 0; i < 4; i = i + 1) begin
+			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
+				rs[i][93:93] = 1'b1;
+				rs[i][92:87] = robNum;
+				rs[i][87:80] = operatorType;
+				rs[i][79:77] = operatorSubType;
+				rs[i][76:76] = operatorFlag;
+				rs[i][75:44] = data1_tmp;
+				rs[i][43:12] = data2_tmp;
+				rs[i][11:6] = q1_tmp;
+				rs[i][5:0] = q2_tmp;
+			end
+		end
+		available = 1'b0;
+		for (i = 0; i < 4; i = i + 1) begin
+			if (rs[i][93:93] == 1'b0) begin
+				available = 1'b1;
+			end
 		end
 	end
 end
