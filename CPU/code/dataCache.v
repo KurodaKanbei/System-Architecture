@@ -149,15 +149,12 @@ always @(posedge clk) begin
 		memoryWriteAddr = writeAddr;
 		
 		memoryWritePulse = 1'b1;
-		#0.01;
 	end
 	
 	writeDone = memoryWriteDone;
 	
-	#0 begin
 		if (hit == 0) begin
 			memoryReadAddr = readAddr;
-			#0.01
 			if (memoryReadEnable == 1) begin
 				readTag = readAddr[31:16];
 				readIndex = readAddr[15:6];
@@ -193,7 +190,6 @@ always @(posedge clk) begin
 				if (readTag == dataTag[readIndex] & valid[readIndex] == 1) hit = 1; else hit = 0;
 			end
 		end
-	end
 	
 	memoryWritePulse = 1'b0;
 end

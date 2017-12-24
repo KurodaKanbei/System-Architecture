@@ -21,8 +21,6 @@ always @(posedge enable) begin
 	robNum_out = robNum;
 	data_out = data;
 	iscast_out = 1;
-	#0.1
-	iscast_out = 0;
 end
 
 endmodule

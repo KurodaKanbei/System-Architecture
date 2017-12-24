@@ -19,7 +19,7 @@ reg[31:0] readAddrOffset;
 reg[31:0] writeAddrOffset;
 reg[5:0] writeWordOffset;
 
-parameter countNum = 200;
+parameter countNum = 1;
 
 integer readCount, writeCount;
 
@@ -49,7 +49,6 @@ always @(posedge readAddress) begin
 end
 
 always @(posedge clock) begin
-	//Set write
 	if (writeCount == 0 && writeDone == 0) begin
 		writeWordOffset = writeAddress[5:0] / 4 * 4;
 		case (writeWordOffset)
