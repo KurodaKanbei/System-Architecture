@@ -10,6 +10,7 @@ module dataMemory (
 	input wire[31:0] writeAddress,
 	input wire writeRequest,
 	input wire[31:0] writeData,
+	input wire[2:0] writeType,
 	output reg writeDone
 );
 

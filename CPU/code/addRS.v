@@ -76,7 +76,7 @@ reg breakmark;
 initial begin
 	broadcast = 1'b0;
 	for (i = 0; i < 4; i = i + 1) begin
-		rs[i] = {93{1'b0}};
+		rs[i] = {94{1'b0}};
 	end
 	available = 1'b1;
 	index = invalidNum;

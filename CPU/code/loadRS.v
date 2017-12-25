@@ -57,7 +57,7 @@ integer i;
 
 initial begin
 	for (i = 0; i < 4; i = i + 1) begin
-		rs[i] = {51{1'b0}};
+		rs[i] = {56{1'b0}};
 		offset[i] = 32'b0;
 		robNum[i] = 6'b0;
 	end
