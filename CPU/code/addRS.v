@@ -104,11 +104,11 @@ always @(posedge CDBiscast or CDBiscast2) begin
 			end
 		end
 		if (rs[i][93:93] == 1'b1 && CDBiscast2 == 1'b1) begin
-			if (rs[i][11:6] == CDBrobNum) begin
+			if (rs[i][11:6] == CDBrobNum2) begin
 				rs[i][75:44] = CDBdata2;
 				rs[i][11:6] = invalidNum;
 			end
-			if (rs[i][5:0] == CDBrobNum) begin
+			if (rs[i][5:0] == CDBrobNum2) begin
 				rs[i][43:12] = CDBdata2;
 				rs[i][5:0] =  invalidNum;
 			end
@@ -165,21 +165,27 @@ reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
+	#50
 	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
 		$display("robNum = %d", robNum);
+		$display("q1 = %d q2 = %d", q1, q2);
 		index = q1;
+		#0.01
 		data1_tmp = data1;
 		q1_tmp = q1;
 		if (index < 16 && ready == 1'b1) begin
 			data1_tmp = value;
 			q1_tmp = invalidNum;
 		end
-		index= q2;
+		index = q2;
+		#0.01
 		data2_tmp = data2;
 		q2_tmp = q2;
 		if (index < 16 && ready == 1'b1) begin
-			data2_tmp = value;	
+			data2_tmp = value;
+			q2_tmp = invalidNum;
 		end
+		$display("q1 = %d q2 = %d", q1, q2);
 		/*$display("q1 = %d", q1);
 		$display("q2 = %d", q2);*/
 		breakmark = 1'b0;
@@ -187,15 +193,19 @@ always @(posedge funcUnitEnable) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
-				/*$display("reservation robNum = %b", rs[i][92:87]);
-				$display("reservation index = %d", i);*/
+				$display("reservation robNum = %b", rs[i][92:87]);
+				$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
 				rs[i][79:77] = operatorSubType;
 				rs[i][76:76] = operatorFlag;
 				rs[i][75:44] = data1_tmp;
 				rs[i][43:12] = data2_tmp;
+				$display("reservation data1 = %d", rs[i][75:44]);
+				$display("reservation data2 = %d", rs[i][43:12]);
 				rs[i][11:6] = q1_tmp;
 				rs[i][5:0] = q2_tmp;
+				$display("reservation q1 = %d", rs[i][11:6]);
+				$display("reservation q2 = %d", rs[i][5:0]);
 				breakmark = 1'b1;
 			end
 		end

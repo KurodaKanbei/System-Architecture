@@ -270,11 +270,8 @@ module cpu();
 	);
 
 	dataMemory dataMemory(
-
 		.clock(clock),
-		
 		.readAddress(dataCache.memoryReadAddr),
-		
 		.writeAddress(dataCache.memoryWriteAddr),
 		.writeRequest(dataCache.memoryWritePulse),
 		.writeData(dataCache.memoryWriteData)
@@ -324,13 +321,10 @@ module cpu();
 	);
 
 	branchPredictor branchPredictor(
-		//Branch Write
 		.branchWriteEnable(reorderBuffer.branchWriteEnable), 
 		.branchWriteData(reorderBuffer.branchWriteData), 
 		.branchWriteAddr(reorderBuffer.branchWriteAddr),
-		//Branch Read for PC
 		.branchPCReadAddr(pcControl.pc), 
-		//Branch Read for ROB
 		.branchROBReadAddr(reorderBuffer.branchAddr)
 	);
 

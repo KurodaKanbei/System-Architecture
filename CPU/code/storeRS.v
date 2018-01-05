@@ -130,6 +130,7 @@ always @(posedge funcUnitEnable) begin
 	if (operatorType == storeOp) begin
 		robNum_out = robNum;
 		index = q1;
+		#0.01
 		data1_tmp = data1;
 		q1_tmp = q1;
 		if (index < 16 && ready == 1'b1) begin
@@ -137,6 +138,7 @@ always @(posedge funcUnitEnable) begin
 			q1_tmp = invalidNum;
 		end
 		index = q2;
+		#0.01
 		data2_tmp = data2;
 		q2_tmp = q2;
 		if (index < 16 && ready == 1'b1) begin

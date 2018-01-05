@@ -100,6 +100,9 @@ always @(posedge CDBiscast or posedge CDBiscast2) begin
 	end
 end
 
+parameter Taken = 32'b1;
+parameter notTaken = 32'b0;
+
 always @(posedge clock) begin
 	breakmark = 1'b0;
 	bneResultEnable = 1'b0;
@@ -107,9 +110,15 @@ always @(posedge clock) begin
 		if (rs[i][93:93] == invalidNum && breakmark == 1'b0) begin
 			if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 				rs[i][93:93] = 1'b0;
-				/*
-					complete the bne
-				*/
+				case (rs[i][79:77])
+					BEQOp: if (rs[i][75:44] == rs[i][43:12]) data_out = Taken; else data_out = notTaken;
+					BNEOp: if (rs[i][75:44] == rs[i][43:12]) data_out = notTaken; else data_out = Taken;
+					BLTOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) data_out = Taken; else data_out = notTaken;
+					BGEOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) data_out = notTaken; else data_out = Taken; 
+					BLTUOp:	if (rs[i][75:44] < rs[i][43:12]) data_out = Taken; else data_out = notTaken; 
+					BGEUOp:	if (rs[i][75:44] < rs[i][43:12]) data_out = notTaken; else data_out = Taken;
+					default: ;
+				endcase
 				robNum_out = rs[i][92:87];
 				bneResultEnable = 1'b1;
 				available = 1'b1;
@@ -127,6 +136,7 @@ reg[5:0] q2_tmp;
 always @(posedge funcUnitEnable) begin
 	if (operatorType == bneOp) begin
 		index = q1;
+		#0.01
 		data1_tmp = data1;
 		q1_tmp = q1;
 		if (index < 16 && ready == 1'b1) begin
@@ -134,6 +144,7 @@ always @(posedge funcUnitEnable) begin
 			q1_tmp = invalidNum;
 		end
 		index = q2;
+		#0.01
 		data2_tmp = data2;
 		q2_tmp = data2;
 		if (index < 16 && ready == 1'b1) begin

@@ -83,8 +83,28 @@ end
 reg[31:0] data_tmp;
 reg[5:0] q_tmp;
 
+always @(posedge clock) begin
+	#50
+	breakmark = 1'b0;
+	loadEnable = 1'b0;
+	for (i = 0;i < 4; i = i + 1) begin
+		if (rs[i][55:55] == 1'b1 && breakmark == 1'b0 && busy == 1'b0) begin
+			if (rs[i][5:0] == invalidNum) begin
+				data_out = rs[i][37:6] + offset[i];
+				robNum_out = robNum[i];
+				rs[i][50:50] = 1'b0;
+				available = 1'b1;
+				breakmark = 1'b1;
+				loadEnable = 1'b1;
+			end
+		end
+	end
+	loadEnable = 1'b0;
+end
+
 always @(posedge funcUnitEnable) begin
 	index = q;
+	#0.01
 	data_tmp = data;
 	q_tmp = q;
 	if (index < 16 && ready == 1'b1) begin

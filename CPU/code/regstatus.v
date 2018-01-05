@@ -33,14 +33,17 @@ initial begin
 end
 
 always @(ROBindex) begin
-	if (ROBstatus < 16) begin
+	$display("ROBindex = %d", ROBindex);
+	if (ROBindex < 16) begin
 		ROBstatus = status[ROBindex];
-	end
-	else ROBstatus = invalidNum;
+	end else ROBstatus = invalidNum;
+	$display("ROBstatus = %d", ROBstatus);
 end
 
 always @(posedge writeEnable) begin
 	status[writeIndex] = writedata;
+	$display("writeIndex = %d", writeIndex);
+	$display("writedata = %d", writedata);
 	if (reg1 < 32) begin
 		q1 = status[reg1];
 	end 

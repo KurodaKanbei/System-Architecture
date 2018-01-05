@@ -165,6 +165,7 @@ initial begin
 end
 
 always @(posedge issueValid) begin
+	#50
 	space = tail;
 	statusWriteEnable = 1'b0;
 	optype[tail] = issue_opType;
@@ -214,10 +215,10 @@ always @(posedge issueValid) begin
 	if (tail >= 16) tail = 0;
 	count = count + 1;
 	if (count >= 16) available = 0;
-	//$display("%%%%%%%%optype = %b", issue_opType);
 end
 
 always @(posedge clk) begin
+	#100
 	cacheWriteEnable = 1'b0;
 	issueNewPCEnable = 1'b0;
 	regWriteEnable = 1'b0;
@@ -236,13 +237,16 @@ always @(posedge clk) begin
 			case(optype[head]) 
 				CalcOp, CalcImmOp: begin
 					statusIndex = dest[head][4:0];
+					$display("statusIndex = %d", dest[head][4:0]);
+					#0.01
 					regWriteIndex = dest[head][4:0];
 					regWriteData = value[head];
 					regWriteType = optype[head];
 					regWriteSubType = opsubtype[head];
 					regWriteEnable = 1'b1;
-
+					$display("statusResult = %d!!!!!!!!", statusResult);
 					if (statusResult == head) begin
+						$display("let me release!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 						statusWriteIndex = dest[head][4:0];
 						statusWriteData = 5'b10000;
 						statusWriteEnable = 1'b1;
@@ -373,6 +377,7 @@ always @(posedge CDBisCast1) begin
 	if (CDBrobNum1 < 16) begin
 		value[CDBrobNum1] = CDBdata1;
 		ready[CDBrobNum1] = 1'b1;
+		$display("RobNum %d has worked out!", CDBrobNum1);
 	end
 end
 
