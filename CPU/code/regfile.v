@@ -13,7 +13,8 @@ module regfile (
 	input wire ROBwriteEnable,
 	input wire[31:0] ROBwriteData,
 	input wire[4:0] ROBwriteIndex,
-	input wire[2:0] ROBwriteType,
+	input wire[6:0] ROBwriteType,
+	input wire[2:0] ROBwriteSubType,
 
 	output reg[31:0] data1,
 	output reg[31:0] data2,
@@ -85,14 +86,17 @@ always @(posedge ROBwriteEnable) begin
 	$display("ROB -> regfile:Type %b", ROBwriteType);
 	$display("ROB -> regfile:Index %b", ROBwriteIndex);
 	$display("ROB -> regfile:Data %b", ROBwriteData);
-	case (ROBwriteType)
-		LWOp: mem[ROBwriteIndex] = ROBwriteData; 
-		LBOp: mem[ROBwriteIndex] = {{24{ROBwriteData[7:7]}}, ROBwriteData[7:0]}; 
-		LHOp: mem[ROBwriteIndex] = {{16{ROBwriteData[15:15]}}, ROBwriteData[15:0]}; 
-		LBUOp:	mem[ROBwriteIndex] = {24'b0, ROBwriteData[7:0]};
-		LHUOp:	mem[ROBwriteIndex] = {16'b0, ROBwriteData[15:0]};
-		default: mem[ROBwriteIndex] = ROBwriteData;
-	endcase
+	if (ROBwriteType == StoreOp) begin
+		case (ROBwriteSubType)
+			LWOp: mem[ROBwriteIndex] = ROBwriteData; 
+			LBOp: mem[ROBwriteIndex] = {{24{ROBwriteData[7:7]}}, ROBwriteData[7:0]}; 
+			LHOp: mem[ROBwriteIndex] = {{16{ROBwriteData[15:15]}}, ROBwriteData[15:0]}; 
+			LBUOp:	mem[ROBwriteIndex] = {24'b0, ROBwriteData[7:0]};
+			LHUOp:	mem[ROBwriteIndex] = {16'b0, ROBwriteData[15:0]};
+		endcase
+	end else begin
+		mem[ROBwriteIndex] = ROBwriteData;
+	end
 	offset = 0;
 	if (operatorType == CalcImmOp) begin
 		data1 = mem[reg1];

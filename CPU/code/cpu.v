@@ -26,12 +26,15 @@ module cpu();
 		clock = 1'b0;
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
+
+		#3000
+		$finish;
 	end
 	
 	always #100 begin
 		clock = ~clock;
 		if (clock == 0) cycle = cycle + 1;
-		//$display("%d", cycle);
+		//$display("%d", pcControl.pc);
 	end
 	
 	assign exception = reorderBuffer.worldEnd;
@@ -108,7 +111,7 @@ module cpu();
 		.ROBwriteData(reorderBuffer.regWriteData),
 		.ROBwriteIndex(reorderBuffer.regWriteIndex),
 		.ROBwriteType(reorderBuffer.regWriteType),
-
+		.ROBwriteSubType(reorderBuffer.regWriteSubType),
 		.regEnable(instructionDecode.regstatusEnable)
 	);
 
@@ -119,7 +122,6 @@ module cpu();
 		.writeEnable(reorderBuffer.statusWriteEnable),
 		.writedata(reorderBuffer.statusWriteData),
 		.writeIndex(reorderBuffer.statusWriteIndex),
-		.writeType(reorderBuffer.statusWriteType),
 
 		.ROBindex(reorderBuffer.statusIndex),
 		.regStatusEnable(instructionDecode.regstatusEnable)
@@ -196,6 +198,7 @@ module cpu();
 		.operatorType(instructionDecode.operatorType),
 		.operatorSubType(instructionDecode.operatorSubType),
 		.operatorFlag(instructionDecode.operatorFlag),
+		
 		.data1(regfile.data1),
 		.q1(regstatus.q1),
 		.data2(regfile.data2),

@@ -1,5 +1,5 @@
 $date
-	Fri Jan  5 17:08:07 2018
+	Fri Jan  5 20:37:33 2018
 $end
 $version
 	Icarus Verilog
@@ -241,21 +241,21 @@ $var wire 7 k" operatorType [6:0] $end
 $var wire 5 l" reg1 [4:0] $end
 $var wire 5 m" reg2 [4:0] $end
 $var wire 1 >" regEnable $end
-$var wire 3 n" ROBwriteType [2:0] $end
-$var wire 5 o" ROBwriteIndex [4:0] $end
-$var wire 1 p" ROBwriteEnable $end
-$var wire 32 q" ROBwriteData [31:0] $end
-$var reg 32 r" data1 [31:0] $end
-$var reg 32 s" data2 [31:0] $end
-$var reg 32 t" offset [31:0] $end
-$var integer 32 u" i [31:0] $end
+$var wire 7 n" ROBwriteType [6:0] $end
+$var wire 3 o" ROBwriteSubType [2:0] $end
+$var wire 5 p" ROBwriteIndex [4:0] $end
+$var wire 1 q" ROBwriteEnable $end
+$var wire 32 r" ROBwriteData [31:0] $end
+$var reg 32 s" data1 [31:0] $end
+$var reg 32 t" data2 [31:0] $end
+$var reg 32 u" offset [31:0] $end
+$var integer 32 v" i [31:0] $end
 $upscope $end
 $scope module regstatus $end
-$var wire 5 v" reg1 [4:0] $end
-$var wire 5 w" reg2 [4:0] $end
+$var wire 5 w" reg1 [4:0] $end
+$var wire 5 x" reg2 [4:0] $end
 $var wire 1 >" regStatusEnable $end
-$var wire 6 x" writedata [5:0] $end
-$var wire 3 y" writeType [2:0] $end
+$var wire 6 y" writedata [5:0] $end
 $var wire 5 z" writeIndex [4:0] $end
 $var wire 1 {" writeEnable $end
 $var wire 5 |" ROBindex [4:0] $end
@@ -289,41 +289,41 @@ $var wire 3 .# issue_opSubType [2:0] $end
 $var wire 7 /# issue_opType [6:0] $end
 $var wire 32 0# issue_pc [31:0] $end
 $var wire 6 1# loadIndexIn [5:0] $end
-$var wire 6 2# space [5:0] $end
-$var wire 6 3# statusResult [5:0] $end
-$var wire 32 4# storeValue [31:0] $end
-$var wire 6 5# storeRobIndex [5:0] $end
-$var wire 6 6# storeIndexIn [5:0] $end
-$var wire 1 7# storeEnable $end
-$var wire 32 8# storeDest [31:0] $end
+$var wire 6 2# statusResult [5:0] $end
+$var wire 32 3# storeValue [31:0] $end
+$var wire 6 4# storeRobIndex [5:0] $end
+$var wire 6 5# storeIndexIn [5:0] $end
+$var wire 1 6# storeEnable $end
+$var wire 32 7# storeDest [31:0] $end
 $var reg 1 7 adderReadyOut $end
-$var reg 32 9# adderResult [31:0] $end
+$var reg 32 8# adderResult [31:0] $end
 $var reg 1 c" available $end
 $var reg 1 R bneReadyOut $end
-$var reg 32 :# bneResult [31:0] $end
-$var reg 32 ;# branchAddr [31:0] $end
-$var reg 32 <# branchWriteAddr [31:0] $end
-$var reg 2 =# branchWriteData [1:0] $end
+$var reg 32 9# bneResult [31:0] $end
+$var reg 32 :# branchAddr [31:0] $end
+$var reg 32 ;# branchWriteAddr [31:0] $end
+$var reg 2 <# branchWriteData [1:0] $end
 $var reg 1 c branchWriteEnable $end
-$var reg 32 ># cacheWriteAddr [31:0] $end
-$var reg 32 ?# cacheWriteData [31:0] $end
+$var reg 32 =# cacheWriteAddr [31:0] $end
+$var reg 32 ># cacheWriteData [31:0] $end
 $var reg 1 k cacheWriteEnable $end
-$var reg 6 @# count [5:0] $end
-$var reg 6 A# head [5:0] $end
-$var reg 32 B# issueNewPC [31:0] $end
+$var reg 6 ?# count [5:0] $end
+$var reg 6 @# head [5:0] $end
+$var reg 32 A# issueNewPC [31:0] $end
 $var reg 1 d" issueNewPCEnable $end
 $var reg 1 J" loadReadyOut $end
-$var reg 32 C# loadResult [31:0] $end
-$var reg 32 D# regWriteData [31:0] $end
-$var reg 1 p" regWriteEnable $end
-$var reg 5 E# regWriteIndex [4:0] $end
-$var reg 3 F# regWriteType [2:0] $end
+$var reg 32 B# loadResult [31:0] $end
+$var reg 32 C# regWriteData [31:0] $end
+$var reg 1 q" regWriteEnable $end
+$var reg 5 D# regWriteIndex [4:0] $end
+$var reg 3 E# regWriteSubType [2:0] $end
+$var reg 7 F# regWriteType [6:0] $end
 $var reg 1 6 resetAll $end
-$var reg 5 G# statusIndex [4:0] $end
-$var reg 6 H# statusWriteData [5:0] $end
+$var reg 6 G# space [5:0] $end
+$var reg 5 H# statusIndex [4:0] $end
+$var reg 6 I# statusWriteData [5:0] $end
 $var reg 1 {" statusWriteEnable $end
-$var reg 5 I# statusWriteIndex [4:0] $end
-$var reg 3 J# statusWriteType [2:0] $end
+$var reg 5 J# statusWriteIndex [4:0] $end
 $var reg 1 K# storeReadyOut $end
 $var reg 32 L# storeResult [31:0] $end
 $var reg 6 M# tail [5:0] $end
@@ -362,7 +362,7 @@ $var reg 6 c# index [5:0] $end
 $var reg 6 d# q1_tmp [5:0] $end
 $var reg 6 e# q2_tmp [5:0] $end
 $var reg 6 f# robNum_out [5:0] $end
-$var reg 1 7# storeEnable $end
+$var reg 1 6# storeEnable $end
 $var integer 32 g# i [31:0] $end
 $upscope $end
 $upscope $end
@@ -387,7 +387,7 @@ b10000 Y#
 bx X#
 bx W#
 bx V#
-b0 U#
+bx U#
 bx T#
 bx S#
 bx R#
@@ -407,22 +407,22 @@ bx E#
 bx D#
 bx C#
 bx B#
-b0 A#
+bx A#
 b0 @#
-bx ?#
+b0 ?#
 bx >#
 bx =#
 bx <#
 bx ;#
-bz :#
+bx :#
 bz 9#
-bx 8#
-07#
-bx 6#
+bz 8#
+bx 7#
+06#
 bx 5#
 bx 4#
 bx 3#
-b0 2#
+bx 2#
 bx 1#
 b11111111111111111111111111111111 0#
 bx /#
@@ -448,13 +448,13 @@ bx z"
 bx y"
 bx x"
 bx w"
-bx v"
-b100000 u"
+b100000 v"
+bx u"
 bx t"
 bx s"
 bx r"
-bx q"
-0p"
+0q"
+bx p"
 bx o"
 bx n"
 bx m"
@@ -489,7 +489,7 @@ xQ"
 1P"
 0O"
 bx N"
-b0 M"
+bx M"
 bx L"
 b10000 K"
 xJ"
@@ -579,7 +579,7 @@ bx U
 b10000 T
 b10000 S
 0R
-b0 Q
+bx Q
 bz P
 bz O
 zN
@@ -607,7 +607,7 @@ b10000 9
 b10000 8
 07
 06
-b0 5
+bx 5
 bz 4
 bx 3
 bx 2
@@ -630,39 +630,55 @@ b0 #
 x!
 $end
 #10000
+0J"
+bz I"
+bz B#
 b10000 }"
-b10000 3#
-b1 @#
-b1 5
-b1 Q
-b1 M"
-b1 2#
-b1 U#
+b10000 2#
+1@
+b10000 G
+b1000 C
+b10000 F
+b0 B
+1P"
+b101 X"
+1Q"
+b10000 V"
+b1000 S"
+b10000 T"
+b10000 1#
+b1 ?#
 b1 M#
 1{"
-b0 x"
-b0 H#
+b0 y"
+b0 I#
 b11 z"
-b11 I#
+b11 J#
+b0 5
+b0 Q
+b0 M"
+b0 G#
+b0 U#
 b1000 >
 b1000 V
 b1000 N"
-b1000 s"
+b1000 t"
 b1000 T#
 b0 ?
 b0 W
-b0 r"
+b0 s"
 b0 S#
 b0 L"
-b0 t"
+b0 u"
 b0 V#
+1=
 b1000 6"
 b1000 _"
 b1000 i"
 b1000 ,#
 b100 <"
 b100 l"
-b100 v"
+b100 w"
 b11 7"
 b11 -#
 13"
@@ -695,40 +711,45 @@ b0 f"
 b0 0#
 11"
 b100 I
-0A
+1A
 b100 g#
 0^#
 b100 b
 0Z
 1}
 b11111111111111111111111111111111 f
-b11111111111111111111111111111111 ;#
+b11111111111111111111111111111111 :#
 b0 e"
-b0 B#
+b0 A#
 0k
 1"
-#10001
-0J"
-bz I"
-bz C#
-0@
-b100 I
-b10000 G
-b1000 C
-b10000 F
-b0 B
-1P"
-b101 X"
-1Q"
-b10000 V"
-b1000 S"
-b10000 T"
-b10000 1#
-1=
 #20000
 b1 #
 0"
 #30000
+1P"
+b101 X"
+1Q"
+b1001 S"
+1@
+b1001 C
+b10 ?#
+b10 M#
+b1 y"
+b1 I#
+b100 z"
+b100 J#
+b1 5
+b1 Q
+b1 M"
+b1 G#
+b1 U#
+1=
+b1001 >
+b1001 V
+b1001 N"
+b1001 t"
+b1001 T#
 1(
 b1000 '
 b1000 0
@@ -742,32 +763,65 @@ b0 L
 b0 E"
 b0 %#
 b0 [#
-0{"
+b1001 6"
+b1001 _"
+b1001 i"
+b1001 ,#
+b101 <"
+b101 l"
+b101 w"
+b100 7"
+b100 -#
+b100100101110001000010011 8"
+b110 ;
+b110 :"
+b110 G"
+b110 `"
+b110 j"
+b110 .#
+b110 W#
+b10011 :
+b10011 U
+b10011 ;"
+b10011 H"
+b10011 a"
+b10011 k"
+b10011 /#
+b10011 X#
+1>"
+b100100101110001000010011 0"
+b100100101110001000010011 @"
+1{"
 b100 b
 b100 g#
-1A
-1@
 1%
 b1000 &
 b1000 D
 b0 $
 b0 H
 b100 I
-03"
-02"
+1A
+13"
+b1 g
+b1 ?"
+b1 f"
+b1 0#
+11"
 1"
 #40000
 b10 #
 0"
 #50000
+1P"
+b101 X"
+1Q"
+b11 M#
 b10 5
 b10 Q
 b10 M"
-b10 2#
+b10 G#
 b10 U#
-b10 M#
-0=
-13"
+1=
 bx 8"
 b111 ;
 b111 :"
@@ -787,47 +841,63 @@ bx X#
 1>"
 bx 0"
 bx @"
+b1001 '
+b1001 0
+b1001 J
+b1001 C"
+b1001 ##
+b1001 Q#
+b1 )
+b1 2
+b1 L
+b1 E"
+b1 %#
+b1 [#
 1(
-b1 g
-b1 ?"
-b1 f"
-b1 0#
+b10 g
+b10 ?"
+b10 f"
+b10 0#
 11"
-12"
+13"
+b1001 &
+b1001 D
+b1 $
+b1 H
 b100 I
 1A
 1%
 b100 g#
 b100 b
+b10 ?#
 b1 @#
-b1 A#
-0p"
-b0 n"
-b0 F#
-b1000 q"
-b1000 D#
-b11 o"
-b11 E#
+0q"
+b0 o"
+b0 E#
+b10011 n"
+b10011 F#
+b1000 r"
+b1000 C#
+b11 p"
+b11 D#
 b11 |"
-b11 G#
+b11 H#
+0{"
 1"
-#50001
-1P"
-b101 X"
-1Q"
-1=
 #60000
 b11 #
 0"
 #70000
+1P"
+b101 X"
+1Q"
+b100 M#
 b11 5
 b11 Q
 b11 M"
-b11 2#
+b11 G#
 b11 U#
-b11 M#
-0=
-1(
+1=
 bx :
 bx U
 bx ;"
@@ -837,19 +907,61 @@ bx k"
 bx /#
 bx X#
 1>"
-b1 @#
-b10 A#
-1!
-1O#
+b10 ?#
+b10 @#
+0q"
+b1001 r"
+b1001 C#
+b100 p"
+b100 D#
+b100 |"
+b100 H#
 b100 b
 b100 g#
 b100 I
-1A
-1%
+0A
+0%
 13"
-b10 g
-b10 ?"
-b10 f"
-b10 0#
+b11 g
+b11 ?"
+b11 f"
+b11 0#
 11"
+1"
+#80000
+b100 #
+0"
+#90000
+1P"
+b101 X"
+1Q"
+b101 M#
+b100 5
+b100 Q
+b100 M"
+b100 G#
+b100 U#
+1=
+bx :
+bx U
+bx ;"
+bx H"
+bx a"
+bx k"
+bx /#
+bx X#
+1>"
+b100 g
+b100 ?"
+b100 f"
+b100 0#
+11"
+13"
+b100 I
+b100 g#
+b100 b
+b10 ?#
+b11 @#
+1!
+1O#
 1"

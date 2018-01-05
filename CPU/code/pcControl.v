@@ -50,7 +50,7 @@ always @(posedge clock) begin
 		pc = pc + 1;
 		decodePulse = 1'b1;
 	end
-	$display("%d", pc);
+	$display("PCnumber = %d", pc);
 end
 
 endmodule

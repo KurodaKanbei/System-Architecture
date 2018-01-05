@@ -35,7 +35,6 @@ module reorderBuffer (
 	output reg statusWriteEnable, 
 	output reg[4:0] statusWriteIndex, 
 	output reg[5:0] statusWriteData,
-	output reg[2:0] statusWriteType,
 
 	output reg cacheWriteEnable, 
 	output reg[31:0] cacheWriteData, 
@@ -70,12 +69,13 @@ module reorderBuffer (
 
 	//Index Provider
 
-	output wire[5:0] space,
+	output reg[5:0] space,
 
 	output reg regWriteEnable,
 	output reg[4:0] regWriteIndex,
 	output reg[31:0] regWriteData,
-	output reg[2:0] regWriteType,
+	output reg[6:0] regWriteType,
+	output reg[2:0] regWriteSubType,
 
 	output reg[4:0] statusIndex,
 	input wire[5:0] statusResult,
@@ -164,19 +164,18 @@ initial begin
 	resetAll = 1'b0;
 end
 
-assign space = tail;
-
 always @(posedge issueValid) begin
+	space = tail;
 	statusWriteEnable = 1'b0;
 	optype[tail] = issue_opType;
 	instAddr[tail] = issue_pc;		
-	ready[tail] = 1'b0;	
+	ready[tail] = 1'b0;
 	case(issue_opType)
 		CalcOp, CalcImmOp: begin
 			dest[tail] = {27'b0, issue_destReg};
 			statusWriteIndex = issue_destReg;
 			statusWriteData = tail;
-			statusWriteEnable = 1'b1;	
+			statusWriteEnable = 1'b1;
 		end
 
 		LUIOp, AUIPCOp: begin
@@ -215,6 +214,7 @@ always @(posedge issueValid) begin
 	if (tail >= 16) tail = 0;
 	count = count + 1;
 	if (count >= 16) available = 0;
+	//$display("%%%%%%%%optype = %b", issue_opType);
 end
 
 always @(posedge clk) begin
@@ -226,21 +226,26 @@ always @(posedge clk) begin
 	issueNewPC = 1'b0;
 	branchAddr = 32'hFFFFFFFF;
 	
+	/*$display("ROB head and tail = %d %d", head, tail);
+	$display("ready head = %d", ready[head]);*/
 	if (count > 0 && ready[head] == 1'b1) begin
 		if (cacheWriteDone == 1) begin
+			/*$display("optype = %b", optype[head]);
+			$display("head = %d", head);*/
+
 			case(optype[head]) 
 				CalcOp, CalcImmOp: begin
 					statusIndex = dest[head][4:0];
 					regWriteIndex = dest[head][4:0];
 					regWriteData = value[head];
-					regWriteType = opsubtype[head];
+					regWriteType = optype[head];
+					regWriteSubType = opsubtype[head];
 					regWriteEnable = 1'b1;
 
 					if (statusResult == head) begin
 						statusWriteIndex = dest[head][4:0];
 						statusWriteData = 5'b10000;
 						statusWriteEnable = 1'b1;
-						statusWriteType = opsubtype[head];
 					end
 				end
 
@@ -289,12 +294,14 @@ always @(posedge clk) begin
 					end
 				end
 				Exception: begin
+					$display("JIETI!!!!");
 					worldEnd = 1'b1;
 				end
 			endcase
 			head = head + 1;
 			count = count - 1;
 			if (head >= 16) head = 0;
+			//$display("ready[head] = %d", ready[head]);
 		end
 	end
 	statusWriteEnable = 1'b0;
