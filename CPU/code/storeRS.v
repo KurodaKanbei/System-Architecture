@@ -48,7 +48,10 @@ module storeRS (
 	input wire funcUnitEnable
 );
 
-parameter swOp = 7'b0100011;
+parameter storeOp = 7'b0100011;
+parameter SBOp = 3'b000;
+parameter SHOp = 3'b001;
+parameter SWOp = 3'b010;
 parameter invalidNum = 6'b010000;
 
 reg[87:0] rs[0:3];
@@ -124,7 +127,7 @@ reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
-	if (operatorType == swOp) begin
+	if (operatorType == storeOp) begin
 		robNum_out = robNum;
 		index = q1;
 		data1_tmp = data1;

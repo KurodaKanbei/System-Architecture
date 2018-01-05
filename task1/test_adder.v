@@ -1,3 +1,4 @@
+`timescale 100ns/10ps
 
 /* ACM Class System (I) 2017 Fall Homework 1 
  *
@@ -23,6 +24,11 @@ module test_adder;
 	reg[15:0]  a, b;
 	adder adder(a, b, answer);
 	integer i;
+	initial
+	begin
+	$dumpfile("test_adder.vcd");
+	$dumpvars();
+	end
 	initial begin
 		for(i=1; i<=100; i=i+1) begin
 			a[14:0] = $random;
@@ -39,6 +45,7 @@ module test_adder;
 			end
 		end
 		$display("Congratulations! You have passed all of the tests.");
+		#1000
 		$finish;
 	end
 endmodule

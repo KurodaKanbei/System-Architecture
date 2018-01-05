@@ -47,6 +47,12 @@ module bneRS (
 
 parameter bneOp = 7'b1100111;
 parameter invalidNum = 6'b010000;
+parameter BEQOp = 3'b000;
+parameter BNEOp = 3'b001;
+parameter BLTOp = 3'b100;
+parameter BGEOp = 3'b101;
+parameter BLTUOp = 3'b110;
+parameter BGEUOp = 3'b111;
 
 reg[93:0] rs[0:3];
 integer i;

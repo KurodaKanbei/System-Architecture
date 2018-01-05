@@ -14,7 +14,7 @@
 
 module addRS (
 	input wire clock,
-	input wire[7:0] operatorType,
+	input wire[6:0] operatorType,
 	input wire[2:0] operatorSubType,
 	input wire operatorFlag, 
 	input wire[5:0] robNum,
@@ -29,7 +29,7 @@ module addRS (
 	input wire[31:0] CDBdata,
 
 	input wire CDBiscast2,
-	input wire CDBrobNum2,
+	input wire[5:0] CDBrobNum2,
 	input wire[31:0] CDBdata2,
 
 	output reg[5:0] robNum_out,
@@ -40,7 +40,7 @@ module addRS (
 
 	output reg[5:0] index,
 	input wire ready,
-	input wire value,
+	input wire[31:0] value,
 
 	input wire funcUnitEnable
 );
@@ -117,7 +117,6 @@ always @(posedge CDBiscast or CDBiscast2) begin
 end
 
 always @(posedge clock) begin
-	#50
 	broadcast = 1'b0;
 	breakmark = 1'b0;
 	for (i = 0; i < 4; i = i + 1) begin

@@ -1,13 +1,30 @@
 `timescale 10ps / 100fs
 
+`include "pcControl.v"
+`include "instructionFetch.v"
+`include "instructionDecode.v"
+`include "regfile.v"
+`include "regstatus.v"
+`include "addRS.v"
+`include "loadRS.v"
+`include "loadUnit.v"
+`include "storeRS.v"
+`include "bneRS.v"
+`include "CDB.v"
+`include "dataCache.v"
+`include "dataMemory.v"
+`include "reorderBuffer.v"
+`include "branchPredictor.v"
+
 module cpu();
+
 	reg clock;
 	wire exception;
 	integer cycle;
 
 	initial begin
 		cycle = 0;
-		clock = 0;
+		clock = 1'b0;
 	end
 
 	always #100 begin
@@ -20,44 +37,273 @@ module cpu();
 	integer i, j, addr;
 
 	always @(posedge exception) begin
-		for (i = 0; i <= 6; i++) begin
-			//Let's print something here for debuging.		
-		end
 		$display("%d", cycle);
 		$finish;
 	end
 
-	pcControl pcControl();
+	pcControl pcControl(
+		.clock(clock),
+		.addempty(addRS.available),
+		.lwempty(loadRS.available),
+		.swempty(storeRS.available),
+		.robempty(reorderBuffer.available),
+		.bneempty(bneRS.available),
+		
+		.operatorType(instructionDecode.operatorType),
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
+		.jump(branchPredictor.branchPCPredict),
+		.jumppc(instructionDecode.data2),
+		
+		.pcChange(reorderBuffer.issueNewPCEnable),
+		.changeData(reorderBuffer.issueNewPC)
+	);
 
-	instructionFetch instructionFetch();
+	instructionFetch instructionFetch(.pc(pcControl.pc));
 
-	instructionDecode instructionDecode();
+	instructionDecode instructionDecode(
+		.clock(clock),
+		.decodePulse(pcControl.decodePulse),
+		.instr(instructionFetch.instr),
+		.available(pcControl.available)
+	);
 
-	regfile regfile();
+	regfile regfile(
+		.operatorType(instructionDecode.operatorType),
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
+		
+		.reg1(instructionDecode.reg1),
+		.reg2(instructionDecode.reg2),
+		.data1_in(instructionDecode.data1),
+		.data2_in(instructionDecode.data2),
+		
+		.ROBwriteEnable(reorderBuffer.regWriteEnable),
+		.ROBwriteData(reorderBuffer.regWriteData),
+		.ROBwriteIndex(reorderBuffer.regWriteIndex),
+		
+		.regEnable(instructionDecode.regstatusEnable)
+	);
 
-	regstatus regstatus();
+	regstatus regstatus(
+		.reg1(instructionDecode.reg1),
+		.reg2(instructionDecode.reg2),
+		
+		.writeEnable(reorderBuffer.statusWriteEnable),
+		.writedata(reorderBuffer.statusWriteData),
+		.writeIndex(reorderBuffer.statusWriteIndex),
+		
+		.ROBindex(reorderBuffer.statusIndex),
+		.regStatusEnable(instructionDecode.regstatusEnable)
+	);
 
-	addRS addRS();
+	addRS addRS(
+		.clock(clock),
+		.operatorType(instructionDecode.operatorType),	
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
+		
+		.robNum(reorderBuffer.space),
+		.data1(regfile.data1),
+		.data2(regfile.data2),
+		.q1(regstatus.q1),
+		.q2(regstatus.q2),
+		.reset(reorderBuffer.resetAll),
+		
+		.CDBiscast(CDBadd.iscast_out),
+		.CDBrobNum(CDBadd.robNum_out),
+		.CDBdata(CDBadd.data_out),
+		.CDBiscast2(CDBlw.iscast_out),
+		.CDBrobNum2(CDBlw.robNum_out),
+		.CDBdata2(CDBlw.data_out),
+		
+		.ready(reorderBuffer.adderReadyOut),
+		.value(reorderBuffer.adderResult),
+		.funcUnitEnable(regstatus.funcUnitEnable)
+	);
 
-	loadRS loadRS();
+	loadRS loadRS(
 
-	loadUnit loadUnit();
+		.clock(clock),
+		.operatorType(instructionDecode.operatorType),
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
+		
+		.data(regfile.data2),
+		.q(regstatus.q1),
+		.destRobNum(reorderBuffer.space),
+		
+		.reset(reorderBuffer.resetAll),
+		
+		.cdbIscast(CDBadd.iscast_out),
+		.cdbData(CDBadd.data_out),
+		.cdbRobNum(CDBadd.robNum_out),
+		.cdbIscast2(CDBlw.iscast_out),
+		.cdbData2(CDBlw.data_out),
+		.cdbRobNum2(CDBlw.robNum_out),
+		
+		.ready(reorderBuffer.loadReadyOut),
+		.value(reorderBuffer.loadResult),
+		
+		.offset_in(regfile.offset),
+		
+		.busy(loadUnit.busy),
+		
+		.funcUnitEnable(regstatus.funcUnitEnable)
+	);
 
-	storeRS storeRS();
+	loadUnit loadUnit(
+		.clock(clock),
+		.addr(loadRS.data_out),
+		.robNum(loadRS.robNum_out),
+		
+		.hit(dataCache.hit),
+		.data_in(dataCache.readData),
+		
+		.loadEnable(loadRS.loadEnable)
+	);
 
-	bneRS bneRS();
+	storeRS storeRS(
+		.clock(clock),
+		.operatorType(instructionDecode.operatorType),
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
+		.data1(regfile.data1),
+		.q1(regstatus.q1),
+		.data2(regfile.data2),
+		.q2(regstatus.q2),
+		.reset(reorderBuffer.resetAll),
+		.offset_in(regfile.offset),
+		.destRobNum(reorderBuffer.space),
+		
+		.iscast(CDBadd.iscast_out),
+		.cdbdata(CDBadd.data_out),
+		.robNum(CDBadd.robNum_out),
+		.iscast2(CDBlw.iscast_out),
+		.cdbdata2(CDBlw.data_out),
+		.robNum2(CDBlw.robNum_out),
+		
+		.ready(reorderBuffer.storeReadyOut),
+		.value(reorderBuffer.storeResult),
+		
+		.funcUnitEnable(regstatus.funcUnitEnable)
+	);
 
-	CDB CDBadd();
+	bneRS bneRS(
+		.clock(clock),
+		.operatorType(instructionDecode.operatorType),
+		.robNum(reorderBuffer.space),
+		.data1(regfile.data1),
+		.data2(regfile.data2),
+		.q1(regstatus.q1),
+		.q2(regstatus.q2),
+		.reset(reorderBuffer.resetAll),
+		
+		.CDBiscast(CDBadd.iscast_out),
+		.CDBrobNum(CDBadd.robNum_out),
+		.CDBdata(CDBadd.data_out),
+		.CDBiscast2(CDBlw.iscast_out),
+		.CDBrobNum2(CDBlw.robNum_out),
+		.CDBdata2(CDBlw.data_out),
+		
+		.ready(reorderBuffer.bneReadyOut),
+		.value(reorderBuffer.bneResult),
+		
+		.funcUnitEnable(regstatus.funcUnitEnable)
+	);
 
-	CDB CDBlw();
+	CDB CDBadd(
+		.enable(addRS.broadcast),
+		.robNum(addRS.robNum_out),
+		.data(addRS.data_out)
+	);
 
-	dataCache dataCache();
+	CDB CDBlw(
+		.enable(loadUnit.cdbEnable),
+		.robNum(loadUnit.robNum_out),
+		.data(loadUnit.cdbdata)
+	);
 
-	dataMemory dataMemory();
+	dataCache dataCache(
 
-	reorderBuffer reorderBuffer();
+		.clk(clock),
 
-	branchPredictor branchPredictor();
+		.readAddr(loadUnit.addr_out),
+		.writeEnable(reorderBuffer.cacheWriteEnable), 
+		.writeAddr(reorderBuffer.cacheWriteAddr),
+		.writeData(reorderBuffer.cacheWriteData), 
+		
+		.memoryReadData(dataMemory.data_out),
+		.memoryReadEnable(dataMemory.readEnable),
+		.memoryWriteDone(dataMemory.writeDone)	
+	);
+
+	dataMemory dataMemory(
+
+		.clock(clock),
+		
+		.readAddress(dataCache.memoryReadAddr),
+		
+		.writeAddress(dataCache.memoryWriteAddr),
+		.writeRequest(dataCache.memoryWritePulse),
+		.writeData(dataCache.memoryWriteData)
+	);
+
+	reorderBuffer reorderBuffer(
+		
+					.clk(clock),					
+
+					.issue_opType(instructionDecode.operatorType),
+					.issue_opSubType(instructionDecode.operatorSubType),
+					.issue_opFlag(instructionDecode.operatorFlag),
+					.issue_data2(instructionDecode.data2), 
+					.issue_pc(pcControl.pc), 
+					.issue_destReg(instructionDecode.destreg),	
+					.issueValid(instructionDecode.ROBissueValid),
+					
+					.adderIndexIn(addRS.index), 
+					.loadIndexIn(loadRS.index), 
+					.storeIndexIn(storeRS.index), 
+					.bneIndexIn(bneRS.index),
+					
+					.cacheWriteDone(dataCache.writeDone),
+					
+					.branchPrediction(branchPredictor.branchROBPredict),
+					
+					.storeEnable(storeRS.storeEnable), 
+					.storeRobIndex(storeRS.robNum_out), 
+					.storeDest(storeRS.data2_out), 
+					.storeValue(storeRS.data1_out), 
+					
+					//CDB
+					.CDBisCast1(CDBadd.iscast_out), 
+					.CDBrobNum1(CDBadd.robNum_out), 
+					.CDBdata1(CDBadd.data_out),
+					
+					.CDBisCast2(CDBlw.iscast_out), 
+					.CDBrobNum2(CDBlw.robNum_out), 
+					.CDBdata2(CDBlw.data_out),
+					
+					.statusResult(regstatus.ROBstatus),
+					//Index Provider
+					.cataclysm(instructionFetch.isdone),
+					
+					.bneWriteResult(bneRS.data_out), 
+					.bneWriteEnable(bneRS.bneResultEnable), 
+					.bneWriteIndex(bneRS.robNum_out)
+	);
+
+	branchPredictor branchPredictor(
+		//Branch Write
+		.branchWriteEnable(reorderBuffer.branchWriteEnable), 
+		.branchWriteData(reorderBuffer.branchWriteData), 
+		.branchWriteAddr(reorderBuffer.branchWriteAddr),
+		
+		//Branch Read for PC
+		.branchPCReadAddr(pcControl.pc), 
+		//Branch Read for ROB
+		.branchROBReadAddr(reorderBuffer.branchAddr)
+	);
 
 endmodule
 

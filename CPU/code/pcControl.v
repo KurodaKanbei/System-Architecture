@@ -7,9 +7,9 @@ module pcControl (
 	input wire swempty,
 	input wire robempty,
 	input wire bneempty,
-	input wire[5:0] operatorType,
+	input wire[6:0] operatorType,
 	input wire[2:0] operatorSubType,
-	input wire[6:0] operatorFlag,
+	input wire operatorFlag,
 
 	output reg available,
 	output reg[31:0] pc,
