@@ -74,17 +74,16 @@ always @(posedge decodePulse) begin
 			data1 = {{20{instr[31:31]}}, instr[31:20]};		
 		end
 		if (operatorType == BEQOp) begin
-			data1 = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			data1 = {{21{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8]};
+			data2 = {{21{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8]};
 		end
 		if (operatorType == LoadOp) begin
 			destreg = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
-			data1 = {{20{instr[31:31]}}, instr[31:20]};
+			data2 = {{20{instr[31:31]}}, instr[31:20]};
 		end
 		if (operatorType == StoreOp) begin
 			operatorSubType = instr[14:12];
@@ -97,9 +96,9 @@ always @(posedge decodePulse) begin
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			if (operatorSubType == 3'b001 || operatorSubType == 3'b101) begin
-				data1 = {{27{1'b0}}, instr[24:20]};
+				data2 = {{27{1'b0}}, instr[24:20]};
 				operatorFlag = instr[30:30];
-			end else data1 = {{20{instr[31:31]}}, instr[31:20]};
+			end else data2 = {{20{instr[31:31]}}, instr[31:20]};
 		end
 		if (operatorType == CalcOp) begin
 			destreg = instr[11:7];

@@ -35,7 +35,8 @@ module reorderBuffer (
 	output reg statusWriteEnable, 
 	output reg[4:0] statusWriteIndex, 
 	output reg[5:0] statusWriteData,
-	
+	output reg[2:0] statusWriteType,
+
 	output reg cacheWriteEnable, 
 	output reg[31:0] cacheWriteData, 
 	output reg[31:0] cacheWriteAddr, 
@@ -74,6 +75,7 @@ module reorderBuffer (
 	output reg regWriteEnable,
 	output reg[4:0] regWriteIndex,
 	output reg[31:0] regWriteData,
+	output reg[2:0] regWriteType,
 
 	output reg[4:0] statusIndex,
 	input wire[5:0] statusResult,
@@ -122,7 +124,7 @@ parameter SBOp = 3'b000;
 parameter SHOp = 3'b001;
 parameter SWOp = 3'b010;
 parameter invalidNum = 6'b010000;
-parameter Exception = 7'b1111111;
+parameter Exception = 7'bxxxxxxx;
 
 reg[31:0] instAddr[0:15];
 reg[6:0] optype[0:15];
@@ -231,12 +233,14 @@ always @(posedge clk) begin
 					statusIndex = dest[head][4:0];
 					regWriteIndex = dest[head][4:0];
 					regWriteData = value[head];
+					regWriteType = opsubtype[head];
 					regWriteEnable = 1'b1;
 
 					if (statusResult == head) begin
 						statusWriteIndex = dest[head][4:0];
 						statusWriteData = 5'b10000;
 						statusWriteEnable = 1'b1;
+						statusWriteType = opsubtype[head];
 					end
 				end
 
@@ -285,7 +289,6 @@ always @(posedge clk) begin
 					end
 				end
 				Exception: begin
-					worldEnd = 1'b0;
 					worldEnd = 1'b1;
 				end
 			endcase

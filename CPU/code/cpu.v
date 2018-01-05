@@ -17,18 +17,17 @@
 `include "branchPredictor.v"
 
 module cpu();
-
 	reg clock;
 	wire exception;
 	integer cycle;
-
+	
 	initial begin
 		cycle = 0;
 		clock = 1'b0;
-		//#1000
-		//$finish;	
+		$dumpfile("cpu.vcd");
+		$dumpvars(2);
 	end
-
+	
 	always #100 begin
 		clock = ~clock;
 		if (clock == 0) cycle = cycle + 1;
@@ -36,12 +35,12 @@ module cpu();
 	end
 	
 	assign exception = reorderBuffer.worldEnd;
-
+	
 	integer i, j, addr;
 
 	always @(posedge exception) begin
 		
-		for (i = 0; i <= 6; ++i) begin
+		/*for (i = 0; i <= 6; ++i) begin
 			$display("\n");
 			$display("Memory block %h", i);
 			$display("");
@@ -63,8 +62,7 @@ module cpu();
 			$display("%h: %x", addr + 13 * 4, dataMemory.mem[i][32 * 13 + 31:32 * 13]);
 			$display("%h: %x", addr + 14 * 4, dataMemory.mem[i][32 * 14 + 31:32 * 14]);
 			$display("%h: %x", addr + 15 * 4, dataMemory.mem[i][32 * 15 + 31:32 * 15]);
-		end
-		$display("%d", cycle);
+		end*/
 		$finish;
 		
 	end
@@ -109,7 +107,8 @@ module cpu();
 		.ROBwriteEnable(reorderBuffer.regWriteEnable),
 		.ROBwriteData(reorderBuffer.regWriteData),
 		.ROBwriteIndex(reorderBuffer.regWriteIndex),
-		
+		.ROBwriteType(reorderBuffer.regWriteType),
+
 		.regEnable(instructionDecode.regstatusEnable)
 	);
 
@@ -120,7 +119,8 @@ module cpu();
 		.writeEnable(reorderBuffer.statusWriteEnable),
 		.writedata(reorderBuffer.statusWriteData),
 		.writeIndex(reorderBuffer.statusWriteIndex),
-		
+		.writeType(reorderBuffer.statusWriteType),
+
 		.ROBindex(reorderBuffer.statusIndex),
 		.regStatusEnable(instructionDecode.regstatusEnable)
 	);
@@ -278,47 +278,46 @@ module cpu();
 	);
 
 	reorderBuffer reorderBuffer(
-		
-					.clk(clock),					
+		.clk(clock),					
 
-					.issue_opType(instructionDecode.operatorType),
-					.issue_opSubType(instructionDecode.operatorSubType),
-					.issue_opFlag(instructionDecode.operatorFlag),
-					.issue_data2(instructionDecode.data2), 
-					.issue_pc(pcControl.pc), 
-					.issue_destReg(instructionDecode.destreg),	
-					.issueValid(instructionDecode.ROBissueValid),
-					
-					.adderIndexIn(addRS.index), 
-					.loadIndexIn(loadRS.index), 
-					.storeIndexIn(storeRS.index), 
-					.bneIndexIn(bneRS.index),
-					
-					.cacheWriteDone(dataCache.writeDone),
-					
-					.branchPrediction(branchPredictor.branchROBPredict),
-					
-					.storeEnable(storeRS.storeEnable), 
-					.storeRobIndex(storeRS.robNum_out), 
-					.storeDest(storeRS.data2_out), 
-					.storeValue(storeRS.data1_out), 
-					
-					//CDB
-					.CDBisCast1(CDBadd.iscast_out), 
-					.CDBrobNum1(CDBadd.robNum_out), 
-					.CDBdata1(CDBadd.data_out),
-					
-					.CDBisCast2(CDBlw.iscast_out), 
-					.CDBrobNum2(CDBlw.robNum_out), 
-					.CDBdata2(CDBlw.data_out),
-					
-					.statusResult(regstatus.ROBstatus),
-					//Index Provider
-					.cataclysm(instructionFetch.isdone),
-					
-					.bneWriteResult(bneRS.data_out), 
-					.bneWriteEnable(bneRS.bneResultEnable), 
-					.bneWriteIndex(bneRS.robNum_out)
+		.issue_opType(instructionDecode.operatorType),
+		.issue_opSubType(instructionDecode.operatorSubType),
+		.issue_opFlag(instructionDecode.operatorFlag),
+		.issue_data2(instructionDecode.data2), 
+		.issue_pc(pcControl.pc), 
+		.issue_destReg(instructionDecode.destreg),	
+		.issueValid(instructionDecode.ROBissueValid),
+		
+		.adderIndexIn(addRS.index), 
+		.loadIndexIn(loadRS.index), 
+		.storeIndexIn(storeRS.index), 
+		.bneIndexIn(bneRS.index),
+		
+		.cacheWriteDone(dataCache.writeDone),
+		
+		.branchPrediction(branchPredictor.branchROBPredict),
+		
+		.storeEnable(storeRS.storeEnable), 
+		.storeRobIndex(storeRS.robNum_out), 
+		.storeDest(storeRS.data2_out), 
+		.storeValue(storeRS.data1_out), 
+		
+		//CDB
+		.CDBisCast1(CDBadd.iscast_out), 
+		.CDBrobNum1(CDBadd.robNum_out), 
+		.CDBdata1(CDBadd.data_out),
+		
+		.CDBisCast2(CDBlw.iscast_out), 
+		.CDBrobNum2(CDBlw.robNum_out), 
+		.CDBdata2(CDBlw.data_out),
+		
+		.statusResult(regstatus.ROBstatus),
+		//Index Provider
+		.cataclysm(instructionFetch.isdone),
+		
+		.bneWriteResult(bneRS.data_out), 
+		.bneWriteEnable(bneRS.bneResultEnable), 
+		.bneWriteIndex(bneRS.robNum_out)
 	);
 
 	branchPredictor branchPredictor(
@@ -326,7 +325,6 @@ module cpu();
 		.branchWriteEnable(reorderBuffer.branchWriteEnable), 
 		.branchWriteData(reorderBuffer.branchWriteData), 
 		.branchWriteAddr(reorderBuffer.branchWriteAddr),
-		
 		//Branch Read for PC
 		.branchPCReadAddr(pcControl.pc), 
 		//Branch Read for ROB
@@ -334,4 +332,3 @@ module cpu();
 	);
 
 endmodule
-

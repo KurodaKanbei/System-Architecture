@@ -82,12 +82,15 @@ always @(posedge regEnable) begin
 end
 
 always @(posedge ROBwriteEnable) begin
+	$display("ROB -> regfile:Type %b", ROBwriteType);
+	$display("ROB -> regfile:Index %b", ROBwriteIndex);
+	$display("ROB -> regfile:Data %b", ROBwriteData);
 	case (ROBwriteType)
 		LWOp: mem[ROBwriteIndex] = ROBwriteData; 
-		LBOp: if (ROBwriteData[7:7] == 1'b0) mem[ROBwriteIndex] = {24'b0, ROBwriteData[7:0]}; else mem[ROBwriteIndex] = {24'b1, ROBwriteData[7:0]}; 
-		LHOp: if (ROBwriteData[7:7] == 1'b0) mem[ROBwriteIndex] = {16'b0, ROBwriteData[15:0]}; else mem[ROBwriteIndex] = {16'b1, ROBwriteData[7:0]};
-		LBUOp:mem[ROBwriteIndex] = {24'b0, ROBwriteData[7:0]};
-		LHUOp:mem[ROBwriteIndex] = {16'b0, ROBwriteData[15:0]};
+		LBOp: mem[ROBwriteIndex] = {{24{ROBwriteData[7:7]}}, ROBwriteData[7:0]}; 
+		LHOp: mem[ROBwriteIndex] = {{16{ROBwriteData[15:15]}}, ROBwriteData[15:0]}; 
+		LBUOp:	mem[ROBwriteIndex] = {24'b0, ROBwriteData[7:0]};
+		LHUOp:	mem[ROBwriteIndex] = {16'b0, ROBwriteData[15:0]};
 		default: mem[ROBwriteIndex] = ROBwriteData;
 	endcase
 	offset = 0;

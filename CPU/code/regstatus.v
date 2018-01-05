@@ -7,6 +7,7 @@ module regstatus (
 	input wire writeEnable,
 	input wire[5:0] writedata,
 	input wire[4:0] writeIndex,
+	input wire[2:0] writeType,
 
 	input wire[4:0] ROBindex,
 	output reg[5:0] ROBstatus,
