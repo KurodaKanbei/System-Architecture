@@ -120,13 +120,14 @@ always @(posedge clock) begin
 	broadcast = 1'b0;
 	breakmark = 1'b0;
 	for (i = 0; i < 4; i = i + 1) begin
-		if (rs[i][86:80] == CalcOp || rs[i][86:80] == CalcImmOp) begin
+		if (rs[i][86:80] == CalcOp) begin
 			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
 				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 					robNum_out = rs[i][92:87];
 					$display("CDB = index%d robNum%d", i, robNum_out);
 					if (rs[i][79:77] == Add) begin
-						if (rs[i][76:76] == 1'b0) data_out = rs[i][75:44] + rs[i][43:12]; else data_out = rs[i][75:44] - rs[i][43:12];	
+						if (rs[i][76:76] == 1'b0) data_out = rs[i][75:44] + rs[i][43:12]; else data_out = rs[i][75:44] - rs[i][43:12];
+						$display("Data_out = %d", data_out);
 					end
 					if (rs[i][79:77] == Sll) begin
 						data_out = rs[i][75:44] << rs[i][43:12];						
@@ -156,6 +157,46 @@ always @(posedge clock) begin
 				end
 			end
 		end
+		if (rs[i][86:80] == CalcImmOp) begin
+			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
+				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
+					robNum_out = rs[i][92:87];
+					$display("CDB = index%d robNum%d", i, robNum_out);
+					if (rs[i][79:77] == Add) begin
+						$display("Im doing Plus!!!!!!! Plus!!!!!!!!!!");
+						$display("data1 %d && data2 %d", rs[i][75:44], rs[i][43:12]);
+						$display("opFlag", rs[i][76:76]);
+						data_out = rs[i][75:44] + rs[i][43:12]; 
+					end
+					if (rs[i][79:77] == Sll) begin
+						data_out = rs[i][75:44] << rs[i][43:12];
+					end
+					if (rs[i][79:77] == Slt) begin
+						data_out = $signed(rs[i][75:44]) < $signed(rs[i][43:12]) ? 32'b1 : 32'b0;
+					end
+					if (rs[i][79:77] == Sltu) begin
+						data_out = rs[i][75:44] < rs[i][43:12] ? 32'b1 : 32'b0;
+					end
+					if (rs[i][79:77] == Srl) begin
+						if (rs[i][76] == 1'b0) data_out = rs[i][75:44] >> rs[i][43:12]; else data_out = $signed(rs[i][75:44]) >>> rs[i][43:12];
+					end
+					if (rs[i][79:77] == Xor) begin
+						data_out = rs[i][75:44] ^ rs[i][43:12];
+					end
+					if (rs[i][79:77] == Or) begin
+						data_out = rs[i][75:44] | rs[i][43:12];
+					end
+					if (rs[i][79:77] == And) begin
+						data_out = rs[i][75:44] & rs[i][43:12];
+					end
+					broadcast = 1'b1;
+					available = 1'b1;
+					breakmark = 1'b1;
+					rs[i][93:93] = 1'b0;
+				end
+			end
+		end
+
 	end
 end
 

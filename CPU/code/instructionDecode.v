@@ -94,6 +94,7 @@ always @(posedge decodePulse) begin
 		if (operatorType == CalcImmOp) begin
 			destreg = instr[11:7];
 			operatorSubType = instr[14:12];
+			operatorFlag = 1'b0;
 			reg1 = instr[19:15];
 			if (operatorSubType == 3'b001 || operatorSubType == 3'b101) begin
 				data2 = {{27{1'b0}}, instr[24:20]};
@@ -106,6 +107,7 @@ always @(posedge decodePulse) begin
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
 			operatorFlag = instr[30:30];
+			$display("Decoding!!!!!!!!! opflag %d", operatorFlag);
 		end
 		if (operatorType == FenceOp) begin
 			operatorSubType = instr[14:12];

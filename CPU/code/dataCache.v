@@ -150,11 +150,13 @@ always @(posedge clk) begin
 		
 		memoryWritePulse = 1'b1;
 	end
-	
+
+	#0.01
 	writeDone = memoryWriteDone;
 	
 		if (hit == 0) begin
 			memoryReadAddr = readAddr;
+			#0.01
 			if (memoryReadEnable == 1) begin
 				readTag = readAddr[31:16];
 				readIndex = readAddr[15:6];

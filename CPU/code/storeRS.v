@@ -104,6 +104,7 @@ end
 reg breakmark;
 
 always @(posedge clock) begin
+	#50
 	breakmark = 1'b0;
 	storeEnable = 1'b0;
 	for (i = 0; i < 4; i = i + 1) begin
@@ -172,4 +173,5 @@ always @(posedge funcUnitEnable) begin
 		end
 	end
 end
+
 endmodule

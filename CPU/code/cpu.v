@@ -27,8 +27,6 @@ module cpu();
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
 
-		#3000
-		$finish;
 	end
 	
 	always #100 begin

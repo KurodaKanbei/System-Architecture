@@ -140,17 +140,17 @@ int main(){
 		}else cur=cur+1;
 
 	for(int i=0;i<8;i++)
-		fprintf(stderr,"reg[%d]=%x\n",i,reg[i]);
+		fprintf(stderr,"reg[%d]=%d\n",i,reg[i]);
 	for(int i=0;i<8;i++)
-		fprintf(stderr,"mem[%d]=%x\n",i,mem[i]);
+		fprintf(stderr,"mem[%d]=%d\n",i,mem[i]);
 	cerr<<endl;	
 
 	}
 
 	for(int i=0;i<8;i++)
-		fprintf(stderr,"reg[%d]=%x\n",i,reg[i]);
+		fprintf(stderr,"reg[%d]=%d\n",i,reg[i]);
 	for(int i=0;i<8;i++)
-		fprintf(stderr,"mem[%d]=%x\n",i,mem[i]);
+		fprintf(stderr,"mem[%d]=%d\n",i,mem[i]);
 	
 
 	cerr<<"./trans plz"<<endl;
