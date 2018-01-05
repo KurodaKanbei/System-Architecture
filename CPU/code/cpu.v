@@ -25,20 +25,48 @@ module cpu();
 	initial begin
 		cycle = 0;
 		clock = 1'b0;
+		//#1000
+		//$finish;	
 	end
 
 	always #100 begin
 		clock = ~clock;
 		if (clock == 0) cycle = cycle + 1;
+		//$display("%d", cycle);
 	end
-
-	assign exception = reorderBuffer.Exception;
+	
+	assign exception = reorderBuffer.worldEnd;
 
 	integer i, j, addr;
 
 	always @(posedge exception) begin
+		
+		for (i = 0; i <= 6; ++i) begin
+			$display("\n");
+			$display("Memory block %h", i);
+			$display("");
+			addr = i * 64;
+			$display("%h: %x", addr + 0 * 4, dataMemory.mem[i][32 * 0 + 31:32 * 0]);
+			$display("%h: %x", addr + 1 * 4, dataMemory.mem[i][32 * 1 + 31:32 * 1]);
+			$display("%h: %x", addr + 2 * 4, dataMemory.mem[i][32 * 2 + 31:32 * 2]);
+			$display("%h: %x", addr + 3 * 4, dataMemory.mem[i][32 * 3 + 31:32 * 3]);
+			$display("%h: %x", addr + 4 * 4, dataMemory.mem[i][32 * 4 + 31:32 * 4]);
+			$display("%h: %x", addr + 5 * 4, dataMemory.mem[i][32 * 5 + 31:32 * 5]);
+			$display("%h: %x", addr + 6 * 4, dataMemory.mem[i][32 * 6 + 31:32 * 6]);
+			$display("%h: %x", addr + 7 * 4, dataMemory.mem[i][32 * 7 + 31:32 * 7]);
+			
+			$display("%h: %x", addr + 8 * 4, dataMemory.mem[i][32 * 8 + 31:32 * 8]);
+			$display("%h: %x", addr + 9 * 4, dataMemory.mem[i][32 * 9 + 31:32 * 9]);
+			$display("%h: %x", addr + 10 * 4, dataMemory.mem[i][32 * 10 + 31:32 * 10]);
+			$display("%h: %x", addr + 11 * 4, dataMemory.mem[i][32 * 11 + 31:32 * 11]);
+			$display("%h: %x", addr + 12 * 4, dataMemory.mem[i][32 * 12 + 31:32 * 12]);
+			$display("%h: %x", addr + 13 * 4, dataMemory.mem[i][32 * 13 + 31:32 * 13]);
+			$display("%h: %x", addr + 14 * 4, dataMemory.mem[i][32 * 14 + 31:32 * 14]);
+			$display("%h: %x", addr + 15 * 4, dataMemory.mem[i][32 * 15 + 31:32 * 15]);
+		end
 		$display("%d", cycle);
 		$finish;
+		
 	end
 
 	pcControl pcControl(

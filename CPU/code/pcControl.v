@@ -34,26 +34,23 @@ initial begin
 end
 
 always @(posedge clock) begin
-	if (count > 0) begin
-		count = count - 1;	
-	end else begin
-		available = addempty & lwempty & swempty & robempty & bneempty;
-		if (pcChange == 1'b1) begin
-			pc = changeData - 1;
-		end else 
-		begin
-			if (operatorType == bneOp) begin
-				if (jump == 1) begin
-					pc = jumppc - 1;
-				end
+	available = addempty & lwempty & swempty & robempty & bneempty;
+	if (pcChange == 1'b1) begin
+		pc = changeData - 1;
+	end else 
+	begin
+		if (operatorType == bneOp) begin
+			if (jump == 1) begin
+				pc = jumppc - 1;
 			end
 		end
-		if (available == 1) begin
-			decodePulse = 1'b0;
-			pc = pc + 1;
-			decodePulse = 1'b1;
-		end
 	end
+	if (available == 1) begin
+		decodePulse = 1'b0;
+		pc = pc + 1;
+		decodePulse = 1'b1;
+	end
+	$display("%d", pc);
 end
 
 endmodule

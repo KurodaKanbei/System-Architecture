@@ -57,57 +57,56 @@ always @(posedge decodePulse) begin
 		operatorType = instr[6:0];
 		if (operatorType == LUIOp) begin
 			destreg = instr[11:7];	
-			data1 = instr[31:12];
+			data1 = {{20{instr[31:31]}}, instr[31:12]};
 		end
 		if (operatorType == AUIPCOp) begin
 			destreg = instr[11:7];	
-			data1 = instr[31:12];		
+			data1 = {{20{instr[31:31]}}, instr[31:12]};		
 		end
 		if (operatorType == JALOp) begin
 			destreg = instr[11:7];	
-			data1 = instr[31:12];		
+			data1 = {{13{instr[31:31]}}, instr[19:12], instr[20:20], instr[30:21]};		
 		end
 		if (operatorType == JALROp) begin
 			destreg = instr[11:7];	
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
-			data1 = instr[31:20];		
+			data1 = {{20{instr[31:31]}}, instr[31:20]};		
 		end
 		if (operatorType == BEQOp) begin
 			data1 = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			data1 = instr[31:25];
+			data1 = {{21{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8]};
 		end
 		if (operatorType == LoadOp) begin
 			destreg = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
-			data1 = instr[31:20];
+			data1 = {{20{instr[31:31]}}, instr[31:20]};
 		end
 		if (operatorType == StoreOp) begin
-			data1 = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			data2 = instr[31:25];
+			data2 = {{20{instr[31:31]}}, instr[31:25], instr[11:7]};
 		end
 		if (operatorType == CalcImmOp) begin
 			destreg = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			if (operatorSubType == 3'b001 || operatorSubType == 3'b101) begin
-				data1 = instr[24:20];
-				operatorFlag = instr[30];
-			end else data1 = instr[31:20];
+				data1 = {{27{1'b0}}, instr[24:20]};
+				operatorFlag = instr[30:30];
+			end else data1 = {{20{instr[31:31]}}, instr[31:20]};
 		end
 		if (operatorType == CalcOp) begin
 			destreg = instr[11:7];
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			operatorFlag = instr[30];
+			operatorFlag = instr[30:30];
 		end
 		if (operatorType == FenceOp) begin
 			operatorSubType = instr[14:12];
@@ -116,4 +115,5 @@ always @(posedge decodePulse) begin
 		end
 	end
 end
+
 endmodule
