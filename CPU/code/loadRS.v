@@ -83,22 +83,21 @@ end
 
 reg[31:0] data_tmp;
 reg[5:0] q_tmp;
-reg[5:0] currentRobNum;
 
 always @(posedge clock) begin
-	$display("I can fetch the clock!!!!!");
-	currentRobNum = destRobNum;
+	//$display("I can fetch the clock!!!!!");
 	#50
-	$display("I solve out the delay");
+	//$display("I solve out the delay");
 	breakmark = 1'b0;
 	loadEnable = 1'b0;
-	$display("loadUnit is busy = %d", busy);
+	//$display("loadUnit is busy = %d", busy);
 	for (i = 0;i < 4; i = i + 1) begin
 		if (rs[i][55:55] == 1'b1 && breakmark == 1'b0 && busy == 1'b0) begin
 			if (rs[i][5:0] == invalidNum) begin
 				data_out = rs[i][37:6] + offset[i];
 				type_out = rs[i][41:39];
 				robNum_out = robNum[i];
+				//$display("loadRS robNum_out = %d", robNum[i]);
 				rs[i][55:55] = 1'b0;
 				available = 1'b1;
 				breakmark = 1'b1;
@@ -111,8 +110,8 @@ end
 
 always @(posedge funcUnitEnable) begin
 	if (operatorType == loadOp) begin
-		$display("robNum = %d", destRobNum);
-		$display("q = %d", q);
+		//$display("robNum = %d", destRobNum);
+		//$display("q = %d", q);
 
 		index = q;
 		#0.01
@@ -128,13 +127,13 @@ always @(posedge funcUnitEnable) begin
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][55:55] == 1'b0 && breakmark == 1'b0) begin
 
-				robNum[i] = currentRobNum;
+				robNum[i] = destRobNum;
 				offset[i] = offset_in;
-				$display("I am coming into loadRS!!!!");
+				/*$display("I am coming into loadRS!!!!");
 				$display("destRobNum is = %d", robNum[i]);
 				$display("offset_is = %d", offset[i]);
 				$display("dependent = %d", q_tmp);
-				$display("position = %d", data_tmp);
+				$display("position = %d", data_tmp);*/
 				rs[i][55:55] = 1'b1;
 				rs[i][48:42] = operatorType;
 				rs[i][41:39] = operatorSubType;

@@ -7,6 +7,7 @@ module pcControl (
 	input wire swempty,
 	input wire robempty,
 	input wire bneempty,
+	input wire nobranch,
 	input wire[6:0] operatorType,
 	input wire[2:0] operatorSubType,
 	input wire operatorFlag,
@@ -14,37 +15,27 @@ module pcControl (
 	output reg available,
 	output reg[31:0] pc,
 	output reg decodePulse,
-
-	input wire jump,
-	input wire[31:0] jumppc,
-
+	
 	input wire pcChange,
 	input wire[31:0] changeData
 );
 
 parameter bneOp = 7'b1100011;
 
-integer count;
+assign nobrach = 1'b1;
 
 initial begin
 	pc = {32{1'b1}};
 	available = 1'b1;
 	decodePulse = 1'b1;
-	count = 100;
+end
+
+always @(posedge pcChange) begin
+	pc = changeData - 1;
 end
 
 always @(posedge clock) begin
-	available = addempty & lwempty & swempty & robempty & bneempty;
-	if (pcChange == 1'b1) begin
-		pc = changeData - 1;
-	end else 
-	begin
-		if (operatorType == bneOp) begin
-			if (jump == 1) begin
-				pc = jumppc - 1;
-			end
-		end
-	end
+	available = addempty & lwempty & swempty & robempty & bneempty && nobranch;
 	if (available == 1) begin
 		decodePulse = 1'b0;
 		pc = pc + 1;

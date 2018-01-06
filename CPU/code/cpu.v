@@ -17,11 +17,38 @@
 `include "branchPredictor.v"
 
 /*
-ori 3 2 0
-addi 4 1 5
-or 2 5 4
-xori 2 6 3
-ori 1 4 6
+add 3 2 3
+or 4 3 2
+lw 4 0 4
+addi 2 3 6
+andi 4 4 7
+lw 5 0 12
+sw 5 0 12
+or 1 4 3
+xori 1 4 6
+xori 6 6 1
+andi 3 4 8
+xor 5 1 5
+sw 3 0 8
+sw 6 0 16
+xori 5 1 8
+lw 3 0 8
+sw 3 0 4
+lw 4 0 12
+xori 4 5 6
+addi 2 2 2
+lw 4 0 4
+sw 1 0 8
+or 1 4 2
+ori 4 1 2
+ori 1 3 1
+addi 3 2 2
+ori 1 4 0
+xor 5 4 3
+xori 2 3 9
+xori 6 6 8
+sw 2 0 4
+sw 5 0 4
 */
 module cpu();
 	reg clock;
@@ -33,15 +60,12 @@ module cpu();
 		clock = 1'b0;
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
-
-		#1000
-		$finish;
+		
 	end
 	
 	always #100 begin
 		clock = ~clock;
 		if (clock == 0) cycle = cycle + 1;
-		//$display("%d", pcControl.pc);
 	end
 	
 	assign exception = reorderBuffer.worldEnd;
@@ -49,32 +73,13 @@ module cpu();
 	integer i, j, addr;
 
 	always @(posedge exception) begin
-		for (i = 0; i < 10; i = i + 1) begin
+		for (i = 0; i < 8; i = i + 1) begin
 			$display("reg[%d] = %d", i, regfile.mem[i]);
 		end
-		/*for (i = 0; i <= 6; ++i) begin
-			$display("\n");
-			$display("Memory block %h", i);
-			$display("");
-			addr = i * 64;
-			$display("%h: %x", addr + 0 * 4, dataMemory.mem[i][32 * 0 + 31:32 * 0]);
-			$display("%h: %x", addr + 1 * 4, dataMemory.mem[i][32 * 1 + 31:32 * 1]);
-			$display("%h: %x", addr + 2 * 4, dataMemory.mem[i][32 * 2 + 31:32 * 2]);
-			$display("%h: %x", addr + 3 * 4, dataMemory.mem[i][32 * 3 + 31:32 * 3]);
-			$display("%h: %x", addr + 4 * 4, dataMemory.mem[i][32 * 4 + 31:32 * 4]);
-			$display("%h: %x", addr + 5 * 4, dataMemory.mem[i][32 * 5 + 31:32 * 5]);
-			$display("%h: %x", addr + 6 * 4, dataMemory.mem[i][32 * 6 + 31:32 * 6]);
-			$display("%h: %x", addr + 7 * 4, dataMemory.mem[i][32 * 7 + 31:32 * 7]);
-			
-			$display("%h: %x", addr + 8 * 4, dataMemory.mem[i][32 * 8 + 31:32 * 8]);
-			$display("%h: %x", addr + 9 * 4, dataMemory.mem[i][32 * 9 + 31:32 * 9]);
-			$display("%h: %x", addr + 10 * 4, dataMemory.mem[i][32 * 10 + 31:32 * 10]);
-			$display("%h: %x", addr + 11 * 4, dataMemory.mem[i][32 * 11 + 31:32 * 11]);
-			$display("%h: %x", addr + 12 * 4, dataMemory.mem[i][32 * 12 + 31:32 * 12]);
-			$display("%h: %x", addr + 13 * 4, dataMemory.mem[i][32 * 13 + 31:32 * 13]);
-			$display("%h: %x", addr + 14 * 4, dataMemory.mem[i][32 * 14 + 31:32 * 14]);
-			$display("%h: %x", addr + 15 * 4, dataMemory.mem[i][32 * 15 + 31:32 * 15]);
-		end*/
+		
+		for (i = 0; i < 32; i = i + 1) begin
+			$display("mem[%d] = %d", i, dataMemory.mem[i]);
+		end
 		$finish;
 		
 	end
@@ -90,9 +95,7 @@ module cpu();
 		.operatorType(instructionDecode.operatorType),
 		.operatorSubType(instructionDecode.operatorSubType),
 		.operatorFlag(instructionDecode.operatorFlag),
-		.jump(branchPredictor.branchPCPredict),
-		.jumppc(instructionDecode.data2),
-		
+	
 		.pcChange(reorderBuffer.issueNewPCEnable),
 		.changeData(reorderBuffer.issueNewPC)
 	);
@@ -280,8 +283,9 @@ module cpu();
 
 	dataMemory dataMemory(
 		.clock(clock),
-		.readAddr(loadUnit.addr_out),
-		.readAddress(reorderBuffer.memoryReadAddr),
+		.loadUnitreadAddr(loadUnit.addr_out),
+		.loadUnitrequest(loadUnit.readEnable),
+
 		.writeAddress(reorderBuffer.memoryWriteAddr),
 		.writeRequest(reorderBuffer.memoryWriteEnable),
 		.writeData(reorderBuffer.memoryWriteData),
@@ -300,14 +304,14 @@ module cpu();
 		.issue_destReg(instructionDecode.destreg),	
 		.issueValid(instructionDecode.ROBissueValid),
 		
+		/*request Data*/
+
 		.adderIndexIn(addRS.index), 
 		.loadIndexIn(loadRS.index), 
 		.storeIndexIn(storeRS.index), 
 		.bneIndexIn(bneRS.index),
-		/**/
-		.memoryWriteDone(dataMemory.writeDone),
-		
-		.branchPrediction(branchPredictor.branchROBPredict),
+	
+		//Provide Index and Address
 		
 		.storeEnable(storeRS.storeEnable), 
 		.storeRobIndex(storeRS.robNum_out), 
@@ -332,12 +336,12 @@ module cpu();
 		.bneWriteIndex(bneRS.robNum_out)
 	);
 
-	branchPredictor branchPredictor(
+	/*branchPredictor branchPredictor(
 		.branchWriteEnable(reorderBuffer.branchWriteEnable), 
 		.branchWriteData(reorderBuffer.branchWriteData), 
 		.branchWriteAddr(reorderBuffer.branchWriteAddr),
 		.branchPCReadAddr(pcControl.pc), 
 		.branchROBReadAddr(reorderBuffer.branchAddr)
-	);
+	);*/
 
 endmodule

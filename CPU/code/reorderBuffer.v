@@ -1,4 +1,6 @@
-/*remember to judge the load operator*/
+/*remember to judge the load operator
+  remember to judge the store operator
+ */
 
 `timescale 10ps / 100fs
 
@@ -42,9 +44,7 @@ module reorderBuffer (
 	output reg[31:0] memoryWriteData, 
 	output reg[31:0] memoryWriteAddr,
 	output reg[2:0] memoryWriteType,
-	input wire memoryWriteDone,	
 	
-	input wire[1:0] branchPrediction,
 	output reg[31:0] branchAddr,
 
 	output reg[31:0] branchWriteAddr, 
@@ -171,6 +171,7 @@ always @(posedge issueValid) begin
 	#0.1
 	statusWriteEnable = 1'b0;
 	optype[tail] = issue_opType;
+	opsubtype[tail] = issue_opSubType;
 	instAddr[tail] = issue_pc;		
 	ready[tail] = 1'b0;
 	case(issue_opType)
@@ -201,10 +202,11 @@ always @(posedge issueValid) begin
 		end
 
 		StoreOp: begin
-			/*to be completed*/
+
 		end
 
 		FenceOp: begin
+		
 		end
 
 		Exception: begin
@@ -212,7 +214,7 @@ always @(posedge issueValid) begin
 		end
 
 	endcase
-	$display("I will change the tail");
+	//$display("I will change the tail");
 	tail = tail + 1;
 	if (tail >= 16) tail = 0;
 	count = count + 1;
@@ -228,87 +230,61 @@ always @(posedge clk) begin
 	branchWriteEnable = 1'b0;
 	issueNewPC = 1'b0;
 	branchAddr = 32'hFFFFFFFF;
-	
-	$display("ROB head and tail = %d %d", head, tail);
-	/*$display("ready head = %d", ready[head]);*/
 	if (count > 0 && ready[head] == 1'b1) begin
-		if (memoryWriteDone == 1) begin
-			/*$display("optype = %b", optype[head]);
-			$display("head = %d", head);*/
-
-			case(optype[head]) 
-				CalcOp, CalcImmOp: begin
-					statusIndex = dest[head][4:0];
-					$display("statusIndex = %d", dest[head][4:0]);
-					#0.01
-					regWriteIndex = dest[head][4:0];
-					regWriteData = value[head];
-					$display("what is your value??? = %d", value[head]);
-					regWriteEnable = 1'b1;
-					$display("statusResult = %d!!!!!!!!", statusResult);
-					if (statusResult == head) begin
-						$display("let me release!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-						statusWriteIndex = dest[head][4:0];
-						statusWriteData = 5'b10000;
-						statusWriteEnable = 1'b1;
-					end
+		/*$display("optype = %b", optype[head]);
+		$display("head = %d", head);*/
+		case(optype[head]) 
+			CalcOp, CalcImmOp: begin
+				statusIndex = dest[head][4:0];
+				//$display("statusIndex = %d", dest[head][4:0]);
+				#0.01
+				regWriteIndex = dest[head][4:0];
+				regWriteData = value[head];
+				//$display("what is your value??? = %d", value[head]);
+				regWriteEnable = 1'b1;
+				//$display("statusResult = %d!!!!!!!!", statusResult);
+				if (statusResult == head) begin
+					//$display("let me release");
+					statusWriteIndex = dest[head][4:0];
+					statusWriteData = 5'b10000;
+					statusWriteEnable = 1'b1;
 				end
-
-				StoreOp: begin
-					memoryWriteData = value[head];
-					memoryWriteAddr = dest[head];
-					memoryWriteType = opsubtype[head];
-					memoryWriteEnable = 1'b1;
+			end
+			
+			LoadOp: begin
+				statusIndex = dest[head][4:0];
+				
+				#0.01
+				regWriteIndex = dest[head][4:0];
+				regWriteData = value[head];
+				regWriteEnable = 1'b1;
+			
+				if (statusResult == head) begin
+					statusWriteIndex = dest[head][4:0];
+					statusWriteData = 5'b10000;
+					statusWriteEnable = 1'b1;
 				end
+			end
 
-				BneOp: begin
-					branchAddr = instAddr[head];
-					tempPrediction = branchPrediction;
-					if ((tempPrediction <= 1 & value[head] != 0) | (tempPrediction >= 2 & value[head] == 0)) begin
-						for (i = 0; i < 32; i = i + 1) begin
-								statusWriteEnable = 1'b0;
-								statusWriteIndex = i[4:0];
-								statusWriteData = 6'b010000;
-								statusWriteEnable = 1'b1;
-						end
+			StoreOp: begin
+				memoryWriteData = value[head];
+				memoryWriteAddr = dest[head];
+				memoryWriteType = opsubtype[head];
+				memoryWriteEnable = 1'b1;
+			end
 
-						tail = head + 1;
-						count = 1;
-						available = 1'b1;
-						if (tail >= 16) tail = 0;
-						
-						if (tempPrediction <= 1) begin
-							branchWriteData = {tempPrediction[0:0], 1'b1};
-							issueNewPC = dest[head];
-						end else begin
-							branchWriteData = {tempPrediction[0:0], 1'b0};
-							issueNewPC = instAddr[head] + 1;	
-						end
-						branchWriteAddr = instAddr[head];
-						branchWriteEnable = 1'b1;
-						issueNewPCEnable = 1'b1;
+			BneOp: begin
 
-						resetAll = 1'b1;
-					end else begin
-						if (tempPrediction <= 1) begin
-							branchWriteData = {tempPrediction[0:0], 1'b0};
-						end else begin
-							branchWriteData = {tempPrediction[0:0], 1'b1};
-						end
-						branchWriteAddr = instAddr[head];
-						branchWriteEnable = 1'b1;
-					end
-				end
-				Exception: begin
-					$display("JIETI!!!!");
-					worldEnd = 1'b1;
-				end
-			endcase
-			head = head + 1;
-			count = count - 1;
-			if (head >= 16) head = 0;
-			//$display("ready[head] = %d", ready[head]);
-		end
+			end
+
+			Exception: begin
+				$display("worldEnd!!!!");
+				worldEnd = 1'b1;
+			end
+		endcase
+		head = head + 1;
+		count = count - 1;
+		if (head >= 16) head = 0;
 	end
 	statusWriteEnable = 1'b0;
 	branchWriteEnable = 1'b0;
@@ -369,6 +345,7 @@ end
 
 always @(posedge storeEnable) begin
 	if (storeRobIndex < 16) begin
+		$display("storeNum %d has been worked out", storeRobIndex);
 		dest[storeRobIndex] = storeDest;
 		value[storeRobIndex] = storeValue;
 		ready[storeRobIndex] = 1'b1;
@@ -379,7 +356,7 @@ always @(posedge CDBisCast1) begin
 	if (CDBrobNum1 < 16) begin
 		value[CDBrobNum1] = CDBdata1;
 		ready[CDBrobNum1] = 1'b1;
-		$display("RobNum %d has worked out!", CDBrobNum1);
+		$display("add&&&&&&&& RobNum %d has worked out!", CDBrobNum1);
 	end
 end
 
@@ -387,6 +364,7 @@ always @(posedge CDBisCast2) begin
 	if (CDBrobNum2 < 16) begin
 		value[CDBrobNum2] = CDBdata2;
 		ready[CDBrobNum2] = 1'b1;
+		$display("lw&&&&&&& RobNum %d has worked out!", CDBrobNum2);
 	end
 end
 

@@ -9,8 +9,10 @@ module loadUnit (
 	input wire[5:0] robNum,
 
 	output reg[31:0] addr_out,
+	output reg readEnable,
+
 	input wire[31:0] data_in,
-	
+		
 	output reg cdbEnable,
 	output reg[5:0] robNum_out,
 	output reg[31:0] cdbdata,
@@ -29,13 +31,14 @@ initial begin
 end
 
 always @(posedge loadEnable) begin
-	addr_out = addr;
 	busy = 1'b1;
-end
-
-always @(posedge clock) begin
 	cdbEnable = 1'b0;
+	addr_out = addr;
+	readEnable = 1'b1;
+	#0.01
 	robNum_out = robNum;
+	//$display("readaddress in loadUnit = %d", addr_out);
+	//$display("loadUnit data_in = %d", data_in);	
 	case (loadType)
 		LWOp: cdbdata = data_in; 
 		LBOp: cdbdata = {{24{data_in[7:7]}}, data_in[7:0]}; 
@@ -43,9 +46,9 @@ always @(posedge clock) begin
 		LBUOp: cdbdata = {24'b0, data_in[7:0]};
 		LHUOp: cdbdata = {16'b0, data_in[15:0]};
 	endcase
-	cdbdata = data_in;
 	cdbEnable = 1'b1;
 	busy = 1'b0;
+	readEnable = 1'b0;
 end
 
 endmodule

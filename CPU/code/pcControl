@@ -6,7 +6,7 @@
 :vpi_module "vhdl_sys";
 :vpi_module "v2005_math";
 :vpi_module "va_math";
-S_0x7fcf28d08f30 .scope module, "pcControl" "pcControl" 2 3;
+S_0x7fb458c0afc0 .scope module, "pcControl" "pcControl" 2 3;
  .timescale -11 -13;
     .port_info 0 /INPUT 1 "clock"
     .port_info 1 /INPUT 1 "addempty"
@@ -14,110 +14,95 @@ S_0x7fcf28d08f30 .scope module, "pcControl" "pcControl" 2 3;
     .port_info 3 /INPUT 1 "swempty"
     .port_info 4 /INPUT 1 "robempty"
     .port_info 5 /INPUT 1 "bneempty"
-    .port_info 6 /INPUT 7 "operatorType"
-    .port_info 7 /INPUT 3 "operatorSubType"
-    .port_info 8 /INPUT 1 "operatorFlag"
-    .port_info 9 /OUTPUT 1 "available"
-    .port_info 10 /OUTPUT 32 "pc"
-    .port_info 11 /OUTPUT 1 "decodePulse"
-    .port_info 12 /INPUT 1 "jump"
-    .port_info 13 /INPUT 32 "jumppc"
-    .port_info 14 /INPUT 1 "pcChange"
-    .port_info 15 /INPUT 32 "changeData"
-P_0x7fcf28d00290 .param/l "bneOp" 0 2 25, C4<1100011>;
-o0x10d60e008 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d09210_0 .net "addempty", 0 0, o0x10d60e008;  0 drivers
-v0x7fcf28d18f60_0 .var "available", 0 0;
-o0x10d60e068 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19000_0 .net "bneempty", 0 0, o0x10d60e068;  0 drivers
-o0x10d60e098 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
-v0x7fcf28d19090_0 .net "changeData", 31 0, o0x10d60e098;  0 drivers
-o0x10d60e0c8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19140_0 .net "clock", 0 0, o0x10d60e0c8;  0 drivers
-v0x7fcf28d19220_0 .var/i "count", 31 0;
-v0x7fcf28d192d0_0 .var "decodePulse", 0 0;
-o0x10d60e158 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19370_0 .net "jump", 0 0, o0x10d60e158;  0 drivers
-o0x10d60e188 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
-v0x7fcf28d19410_0 .net "jumppc", 31 0, o0x10d60e188;  0 drivers
-o0x10d60e1b8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19520_0 .net "lwempty", 0 0, o0x10d60e1b8;  0 drivers
-o0x10d60e1e8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d195c0_0 .net "operatorFlag", 0 0, o0x10d60e1e8;  0 drivers
-o0x10d60e218 .functor BUFZ 3, C4<zzz>; HiZ drive
-v0x7fcf28d19660_0 .net "operatorSubType", 2 0, o0x10d60e218;  0 drivers
-o0x10d60e248 .functor BUFZ 7, C4<zzzzzzz>; HiZ drive
-v0x7fcf28d19710_0 .net "operatorType", 6 0, o0x10d60e248;  0 drivers
-v0x7fcf28d197c0_0 .var "pc", 31 0;
-o0x10d60e2a8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19870_0 .net "pcChange", 0 0, o0x10d60e2a8;  0 drivers
-o0x10d60e2d8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d19910_0 .net "robempty", 0 0, o0x10d60e2d8;  0 drivers
-o0x10d60e308 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fcf28d199b0_0 .net "swempty", 0 0, o0x10d60e308;  0 drivers
-E_0x7fcf28d02490 .event posedge, v0x7fcf28d19140_0;
-    .scope S_0x7fcf28d08f30;
+    .port_info 6 /INPUT 1 "nobranch"
+    .port_info 7 /INPUT 7 "operatorType"
+    .port_info 8 /INPUT 3 "operatorSubType"
+    .port_info 9 /INPUT 1 "operatorFlag"
+    .port_info 10 /OUTPUT 1 "available"
+    .port_info 11 /OUTPUT 32 "pc"
+    .port_info 12 /OUTPUT 1 "decodePulse"
+    .port_info 13 /INPUT 1 "pcChange"
+    .port_info 14 /INPUT 32 "changeData"
+P_0x7fb458c054a0 .param/l "bneOp" 0 2 23, C4<1100011>;
+o0x105d83008 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c0b310_0 .net "addempty", 0 0, o0x105d83008;  0 drivers
+v0x7fb458c1af90_0 .var "available", 0 0;
+o0x105d83068 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b030_0 .net "bneempty", 0 0, o0x105d83068;  0 drivers
+o0x105d83098 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x7fb458c1b0c0_0 .net "changeData", 31 0, o0x105d83098;  0 drivers
+o0x105d830c8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b170_0 .net "clock", 0 0, o0x105d830c8;  0 drivers
+v0x7fb458c1b250_0 .var "decodePulse", 0 0;
+o0x105d83128 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b2f0_0 .net "lwempty", 0 0, o0x105d83128;  0 drivers
+L_0x105db5008 .functor BUFT 1, C4<1>, C4<0>, C4<0>, C4<0>;
+v0x7fb458c1b390_0 .net "nobrach", 0 0, L_0x105db5008;  1 drivers
+o0x105d83188 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b430_0 .net "nobranch", 0 0, o0x105d83188;  0 drivers
+o0x105d831b8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b540_0 .net "operatorFlag", 0 0, o0x105d831b8;  0 drivers
+o0x105d831e8 .functor BUFZ 3, C4<zzz>; HiZ drive
+v0x7fb458c1b5d0_0 .net "operatorSubType", 2 0, o0x105d831e8;  0 drivers
+o0x105d83218 .functor BUFZ 7, C4<zzzzzzz>; HiZ drive
+v0x7fb458c1b680_0 .net "operatorType", 6 0, o0x105d83218;  0 drivers
+v0x7fb458c1b730_0 .var "pc", 31 0;
+o0x105d83278 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b7e0_0 .net "pcChange", 0 0, o0x105d83278;  0 drivers
+o0x105d832a8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b880_0 .net "robempty", 0 0, o0x105d832a8;  0 drivers
+o0x105d832d8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fb458c1b920_0 .net "swempty", 0 0, o0x105d832d8;  0 drivers
+E_0x7fb458c054e0 .event posedge, v0x7fb458c1b170_0;
+E_0x7fb458c03570 .event posedge, v0x7fb458c1b7e0_0;
+    .scope S_0x7fb458c0afc0;
 T_0 ;
     %pushi/vec4 4294967295, 0, 32;
-    %store/vec4 v0x7fcf28d197c0_0, 0, 32;
+    %store/vec4 v0x7fb458c1b730_0, 0, 32;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fcf28d18f60_0, 0, 1;
+    %store/vec4 v0x7fb458c1af90_0, 0, 1;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fcf28d192d0_0, 0, 1;
-    %pushi/vec4 100, 0, 32;
-    %store/vec4 v0x7fcf28d19220_0, 0, 32;
+    %store/vec4 v0x7fb458c1b250_0, 0, 1;
     %end;
     .thread T_0;
-    .scope S_0x7fcf28d08f30;
+    .scope S_0x7fb458c0afc0;
 T_1 ;
-    %wait E_0x7fcf28d02490;
-    %load/vec4 v0x7fcf28d09210_0;
-    %load/vec4 v0x7fcf28d19520_0;
-    %and;
-    %load/vec4 v0x7fcf28d199b0_0;
-    %and;
-    %load/vec4 v0x7fcf28d19910_0;
-    %and;
-    %load/vec4 v0x7fcf28d19000_0;
-    %and;
-    %store/vec4 v0x7fcf28d18f60_0, 0, 1;
-    %load/vec4 v0x7fcf28d19870_0;
-    %cmpi/e 1, 0, 1;
-    %jmp/0xz  T_1.0, 4;
-    %load/vec4 v0x7fcf28d19090_0;
+    %wait E_0x7fb458c03570;
+    %load/vec4 v0x7fb458c1b0c0_0;
     %subi 1, 0, 32;
-    %store/vec4 v0x7fcf28d197c0_0, 0, 32;
-    %jmp T_1.1;
-T_1.0 ;
-    %load/vec4 v0x7fcf28d19710_0;
-    %cmpi/e 99, 0, 7;
-    %jmp/0xz  T_1.2, 4;
-    %load/vec4 v0x7fcf28d19370_0;
-    %pad/u 32;
-    %cmpi/e 1, 0, 32;
-    %jmp/0xz  T_1.4, 4;
-    %load/vec4 v0x7fcf28d19410_0;
-    %subi 1, 0, 32;
-    %store/vec4 v0x7fcf28d197c0_0, 0, 32;
-T_1.4 ;
-T_1.2 ;
-T_1.1 ;
-    %load/vec4 v0x7fcf28d18f60_0;
-    %pad/u 32;
-    %cmpi/e 1, 0, 32;
-    %jmp/0xz  T_1.6, 4;
-    %pushi/vec4 0, 0, 1;
-    %store/vec4 v0x7fcf28d192d0_0, 0, 1;
-    %load/vec4 v0x7fcf28d197c0_0;
-    %addi 1, 0, 32;
-    %store/vec4 v0x7fcf28d197c0_0, 0, 32;
-    %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fcf28d192d0_0, 0, 1;
-T_1.6 ;
-    %delay 10000, 0;
-    %vpi_call 2 54 "$display", "%d", v0x7fcf28d197c0_0 {0 0 0};
+    %store/vec4 v0x7fb458c1b730_0, 0, 32;
     %jmp T_1;
     .thread T_1;
+    .scope S_0x7fb458c0afc0;
+T_2 ;
+    %wait E_0x7fb458c054e0;
+    %load/vec4 v0x7fb458c0b310_0;
+    %load/vec4 v0x7fb458c1b2f0_0;
+    %and;
+    %load/vec4 v0x7fb458c1b920_0;
+    %and;
+    %load/vec4 v0x7fb458c1b880_0;
+    %and;
+    %load/vec4 v0x7fb458c1b030_0;
+    %and;
+    %load/vec4 v0x7fb458c1b430_0;
+    %and;
+    %store/vec4 v0x7fb458c1af90_0, 0, 1;
+    %load/vec4 v0x7fb458c1af90_0;
+    %pad/u 32;
+    %cmpi/e 1, 0, 32;
+    %jmp/0xz  T_2.0, 4;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fb458c1b250_0, 0, 1;
+    %load/vec4 v0x7fb458c1b730_0;
+    %addi 1, 0, 32;
+    %store/vec4 v0x7fb458c1b730_0, 0, 32;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x7fb458c1b250_0, 0, 1;
+T_2.0 ;
+    %vpi_call 2 44 "$display", "PCnumber = %d", v0x7fb458c1b730_0 {0 0 0};
+    %jmp T_2;
+    .thread T_2;
 # The file index is used to find the file name in the following table.
 :file_names 3;
     "N/A";

@@ -81,8 +81,8 @@ always @(posedge regEnable) begin
 end
 
 always @(posedge ROBwriteEnable) begin
-	$display("ROB -> regfile:Index %b", ROBwriteIndex);
-	$display("ROB -> regfile:Data %b", ROBwriteData);
+	$display("ROB -> regfile:Index %d", ROBwriteIndex);
+	$display("ROB -> regfile:Data %d", ROBwriteData);
 	mem[ROBwriteIndex] = ROBwriteData;
 	offset = 0;
 	if (operatorType == CalcImmOp) begin

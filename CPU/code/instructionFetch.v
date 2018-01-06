@@ -6,7 +6,7 @@ module instructionFetch (
 	output reg isdone
 ); 
 
-parameter size = 1 << 7;
+parameter size = 1 << 10;
 reg[31:0] mem [0:size - 1];
 integer i;	
 

@@ -87,8 +87,8 @@ always @(posedge decodePulse) begin
 		end
 		if (operatorType == StoreOp) begin
 			operatorSubType = instr[14:12];
-			reg1 = instr[19:15];
-			reg2 = instr[24:20];
+			reg1 = instr[24:20];
+			reg2 = instr[19:15];
 			data2 = {{20{instr[31:31]}}, instr[31:25], instr[11:7]};
 		end
 		if (operatorType == CalcImmOp) begin
@@ -101,7 +101,7 @@ always @(posedge decodePulse) begin
 				operatorFlag = instr[30:30];
 			end else begin
 				data2 = {{20{instr[31:31]}}, instr[31:20]};
-				$display("I can see you! = %d", data2);	
+				//$display("I can see you! = %d", data2);	
 			end
 		end
 		if (operatorType == CalcOp) begin
@@ -110,7 +110,7 @@ always @(posedge decodePulse) begin
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
 			operatorFlag = instr[30:30];
-			$display("Decoding!!!!!!!!! opflag %d", operatorFlag);
+			//$display("Decoding!!!!!!!!! opflag %d", operatorFlag);
 		end
 		if (operatorType == FenceOp) begin
 			operatorSubType = instr[14:12];

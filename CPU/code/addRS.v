@@ -72,7 +72,6 @@ reg[93:0] rs[0:3];
 
 integer i;
 reg breakmark;
-reg currentRobNum;
 
 initial begin
 	broadcast = 1'b0;
@@ -118,7 +117,6 @@ always @(posedge CDBiscast or CDBiscast2) begin
 end
 
 always @(posedge clock) begin
-	currentRobNum = robNum;
 	#50
 	broadcast = 1'b0;
 	breakmark = 1'b0;
@@ -190,7 +188,7 @@ always @(posedge clock) begin
 						data_out = rs[i][75:44] | rs[i][43:12];
 					end
 					if (rs[i][79:77] == And) begin
-						$display("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^data1 = %d data2= %d", rs[i][75:44], rs[i][43:12]);
+						$display("^^^^^^^^^^^^^^^^^^^^^^^^^^^data1 = %d data2= %d", rs[i][75:44], rs[i][43:12]);
 						data_out = rs[i][75:44] & rs[i][43:12];
 						$display("data_out = %d", data_out);
 					end
@@ -212,9 +210,9 @@ reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
 	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
-		$display("robNum = %d", robNum);
-		$display("q1 = %d q2 = %d", q1, q2);
-		$display("data1 = %d &&&&&&& data2 = %d", data1, data2);
+		//$display("robNum = %d", robNum);
+		//$display("q1 = %d q2 = %d", q1, q2);
+		//$display("data1 = %d &&&&&&& data2 = %d", data1, data2);
 
 		index = q1;
 		#0.01
@@ -232,28 +230,28 @@ always @(posedge funcUnitEnable) begin
 			data2_tmp = value;
 			q2_tmp = invalidNum;
 		end
-		$display("q1 = %d q2 = %d", q1, q2);
-		$display("data1_tmp = %d &&&&&&& data2_tmp = %d", data1_tmp, data2_tmp);
-		/*$display("q1 = %d", q1);
-		$display("q2 = %d", q2);*/
+		//$display("q1 = %d q2 = %d", q1, q2);
+		//$display("data1_tmp = %d &&&&&&& data2_tmp = %d", data1_tmp, data2_tmp);
+		$display("q1 = %d", q1);
+		$display("q2 = %d", q2);
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
 				rs[i][93:93] = 1'b1;
-				rs[i][92:87] = currentRobNum;
-				$display("reservation robNum = %b", rs[i][92:87]);
-				$display("reservation index = %d", i);
+				rs[i][92:87] = robNum;
+				$display("robNum in addRS = %d", rs[i][92:87]);
+				//$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
 				rs[i][79:77] = operatorSubType;
 				rs[i][76:76] = operatorFlag;
 				rs[i][75:44] = data1_tmp;
 				rs[i][43:12] = data2_tmp;
-				$display("reservation data1 = %d", rs[i][75:44]);
-				$display("reservation data2 = %d", rs[i][43:12]);
+				//$display("reservation data1 = %d", rs[i][75:44]);
+				//$display("reservation data2 = %d", rs[i][43:12]);
 				rs[i][11:6] = q1_tmp;
 				rs[i][5:0] = q2_tmp;
-				$display("reservation q1 = %d", rs[i][11:6]);
-				$display("reservation q2 = %d", rs[i][5:0]);
+				//$display("reservation q1 = %d", rs[i][11:6]);
+				//$display("reservation q2 = %d", rs[i][5:0]);
 				breakmark = 1'b1;
 			end
 		end

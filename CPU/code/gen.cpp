@@ -31,9 +31,9 @@ int main(int argc,char *argv[]){
 		}else if(t<60){
 			if(rand()%2){
 				cout<<"lw "<<rand()%regn+1<<" "<<0<<" "<<(rand()%memn)*4<<endl;
-			}/*else{
+			}else{
 				cout<<"sw "<<rand()%regn+1<<" "<<0<<" "<<(rand()%memn)*4<<endl;
-			}*/
+			}
 		}else{
 			//cout<<"lui "<<rand()%regn+1<<" "<<rand()%10+1<<endl;
 		}

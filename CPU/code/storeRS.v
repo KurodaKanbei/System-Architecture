@@ -70,11 +70,29 @@ end
 always @(posedge reset) begin
 	robNum_out = invalidNum;
 	for (i = 0;i < 4; i = i+1) begin
-		rs[i][82:82] = 1'b0;
+		rs[i][87:87] = 1'b0;
 	end
 	available = 1'b1;
 end
 
+
+always @(posedge clock) begin
+	breakmark = 1'b0;
+	storeEnable = 1'b0;
+	for (i = 0; i < 4; i = i + 1) begin
+		if (rs[i][87:87] == 1'b1 && breakmark == 1'b0) begin
+			if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
+				rs[i][87:87] = 1'b0;
+				robNum_out = destRob[i];
+				data1_out = rs[i][75:44];
+				data2_out = rs[i][43:12] + offset[i];
+				available = 1'b1;
+				breakmark = 1'b1;
+				storeEnable = 1'b1;
+			end
+		end
+	end
+end
 
 always @(posedge iscast or posedge iscast2) begin
 	for (i = 0; i < 4; i = i + 1) begin
@@ -102,25 +120,6 @@ always @(posedge iscast or posedge iscast2) begin
 end
 
 reg breakmark;
-
-always @(posedge clock) begin
-	#50
-	breakmark = 1'b0;
-	storeEnable = 1'b0;
-	for (i = 0; i < 4; i = i + 1) begin
-		if (rs[i][87:87] == 1'b1 && breakmark == 1'b0) begin
-			if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
-				rs[i][87:87] = 1'b0;
-				robNum_out = destRob[i];
-				data1_out = rs[i][75:44];
-				data2_out = rs[i][43:12] + offset[i];
-				available = 1'b1;
-				breakmark = 1'b1;
-				storeEnable = 1'b1;
-			end
-		end
-	end
-end
 
 reg[31:0] data1_tmp;
 reg[5:0] q1_tmp;
@@ -150,6 +149,8 @@ always @(posedge funcUnitEnable) begin
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin	
 			if (rs[i][87:87] == 1'b0 && breakmark == 1'b0) begin
+			//	$display("************************offset = %d****************************", offset_in);
+				$display("value = %d base = %d offset = %d", data1_tmp, data2_tmp, offset_in);	
 				destRob[i] = destRobNum;
 				offset[i] = offset_in;
 				rs[i][87:87] = 1'b1;
