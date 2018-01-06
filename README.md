@@ -1,7 +1,7 @@
 # System-Architecture
 A CPU with Tomasulo Algorithm
 
-##Complete the following instructions
+## Complete the following instructions
 
 Arithmatic operators
 load operators
