@@ -1,4 +1,4 @@
-`timescale 100ns / 10ps
+`timescale 10ps / 100fs
 
 /*
 	93:93 busy
