@@ -52,7 +52,7 @@ always @(posedge writeEnable) begin
 		q2 = status[reg2];
 	end
 	else q2 = invalidNum;
-	if (ROBstatus < 16) begin
+	if (ROBindex < 16) begin
 		ROBstatus = status[ROBindex];
 	end
 	else ROBstatus = invalidNum;

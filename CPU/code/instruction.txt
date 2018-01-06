@@ -1,4 +1,1 @@
-andi 4 4 1
-and 4 6 1
-ori 2 5 4
-xori 2 6 4
+lw 3 0 9

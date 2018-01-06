@@ -16,6 +16,13 @@
 `include "reorderBuffer.v"
 `include "branchPredictor.v"
 
+/*
+ori 3 2 0
+addi 4 1 5
+or 2 5 4
+xori 2 6 3
+ori 1 4 6
+*/
 module cpu();
 	reg clock;
 	wire exception;
@@ -27,6 +34,8 @@ module cpu();
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
 
+		#1000
+		$finish;
 	end
 	
 	always #100 begin
@@ -40,7 +49,9 @@ module cpu();
 	integer i, j, addr;
 
 	always @(posedge exception) begin
-		
+		for (i = 0; i < 10; i = i + 1) begin
+			$display("reg[%d] = %d", i, regfile.mem[i]);
+		end
 		/*for (i = 0; i <= 6; ++i) begin
 			$display("\n");
 			$display("Memory block %h", i);
@@ -108,8 +119,6 @@ module cpu();
 		.ROBwriteEnable(reorderBuffer.regWriteEnable),
 		.ROBwriteData(reorderBuffer.regWriteData),
 		.ROBwriteIndex(reorderBuffer.regWriteIndex),
-		.ROBwriteType(reorderBuffer.regWriteType),
-		.ROBwriteSubType(reorderBuffer.regWriteSubType),
 		.regEnable(instructionDecode.regstatusEnable)
 	);
 
@@ -183,11 +192,10 @@ module cpu();
 	loadUnit loadUnit(
 		.clock(clock),
 		.addr(loadRS.data_out),
-		.robNum(loadRS.robNum_out),
-		
-		.hit(dataCache.hit),
-		.data_in(dataCache.readData),
-		
+		.robNum(loadRS.robNum_out),	
+		.loadType(loadRS.type_out),
+		.data_in(dataMemory.data_out),
+			
 		.loadEnable(loadRS.loadEnable)
 	);
 
@@ -253,7 +261,7 @@ module cpu();
 		.data(loadUnit.cdbdata)
 	);
 
-	dataCache dataCache(
+	/*dataCache dataCache(
 
 		.clk(clock),
 
@@ -261,18 +269,24 @@ module cpu();
 		.writeEnable(reorderBuffer.cacheWriteEnable), 
 		.writeAddr(reorderBuffer.cacheWriteAddr),
 		.writeData(reorderBuffer.cacheWriteData), 
-		
+		.writeType(reorderBuffer.cacheWriteType),
+		.writeSubType(reorderBuffer.cacheWriteSubType),
+		.writeSubFlag(reorderBuffer.cacheWriteFlag),
+
 		.memoryReadData(dataMemory.data_out),
 		.memoryReadEnable(dataMemory.readEnable),
 		.memoryWriteDone(dataMemory.writeDone)	
-	);
+	);*/
 
 	dataMemory dataMemory(
 		.clock(clock),
-		.readAddress(dataCache.memoryReadAddr),
-		.writeAddress(dataCache.memoryWriteAddr),
-		.writeRequest(dataCache.memoryWritePulse),
-		.writeData(dataCache.memoryWriteData)
+		.readAddr(loadUnit.addr_out),
+		.readAddress(reorderBuffer.memoryReadAddr),
+		.writeAddress(reorderBuffer.memoryWriteAddr),
+		.writeRequest(reorderBuffer.memoryWriteEnable),
+		.writeData(reorderBuffer.memoryWriteData),
+		.writeType(reorderBuffer.memoryWriteType)
+
 	);
 
 	reorderBuffer reorderBuffer(
@@ -290,8 +304,8 @@ module cpu();
 		.loadIndexIn(loadRS.index), 
 		.storeIndexIn(storeRS.index), 
 		.bneIndexIn(bneRS.index),
-		
-		.cacheWriteDone(dataCache.writeDone),
+		/**/
+		.memoryWriteDone(dataMemory.writeDone),
 		
 		.branchPrediction(branchPredictor.branchROBPredict),
 		

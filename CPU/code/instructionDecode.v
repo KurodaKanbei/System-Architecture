@@ -99,7 +99,10 @@ always @(posedge decodePulse) begin
 			if (operatorSubType == 3'b001 || operatorSubType == 3'b101) begin
 				data2 = {{27{1'b0}}, instr[24:20]};
 				operatorFlag = instr[30:30];
-			end else data2 = {{20{instr[31:31]}}, instr[31:20]};
+			end else begin
+				data2 = {{20{instr[31:31]}}, instr[31:20]};
+				$display("I can see you! = %d", data2);	
+			end
 		end
 		if (operatorType == CalcOp) begin
 			destreg = instr[11:7];

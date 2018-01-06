@@ -1,4 +1,4 @@
-`timescale 10ps / 100fs
+/*`timescale 10ps / 100fs
 
 module dataCache (
 	input wire clk,
@@ -14,6 +14,7 @@ module dataCache (
 
 	output reg[31:0] memoryReadAddr,
 	input wire[511:0] memoryReadData,
+	input wire[]
 	input wire memoryReadEnable,
 
 	output reg memoryWritePulse,
@@ -196,4 +197,4 @@ always @(posedge clk) begin
 	memoryWritePulse = 1'b0;
 end
 
-endmodule
+endmodule*/

@@ -35,11 +35,14 @@ module reorderBuffer (
 	output reg statusWriteEnable, 
 	output reg[4:0] statusWriteIndex, 
 	output reg[5:0] statusWriteData,
+	
+	output reg[31:0] memoryReadAddr,
 
-	output reg cacheWriteEnable, 
-	output reg[31:0] cacheWriteData, 
-	output reg[31:0] cacheWriteAddr, 
-	input wire cacheWriteDone,	
+	output reg memoryWriteEnable, 
+	output reg[31:0] memoryWriteData, 
+	output reg[31:0] memoryWriteAddr,
+	output reg[2:0] memoryWriteType,
+	input wire memoryWriteDone,	
 	
 	input wire[1:0] branchPrediction,
 	output reg[31:0] branchAddr,
@@ -69,13 +72,11 @@ module reorderBuffer (
 
 	//Index Provider
 
-	output reg[5:0] space,
+	output wire[5:0] space,
 
 	output reg regWriteEnable,
 	output reg[4:0] regWriteIndex,
 	output reg[31:0] regWriteData,
-	output reg[6:0] regWriteType,
-	output reg[2:0] regWriteSubType,
 
 	output reg[4:0] statusIndex,
 	input wire[5:0] statusResult,
@@ -164,9 +165,10 @@ initial begin
 	resetAll = 1'b0;
 end
 
+assign space = tail;
+
 always @(posedge issueValid) begin
-	#50
-	space = tail;
+	#0.1
 	statusWriteEnable = 1'b0;
 	optype[tail] = issue_opType;
 	instAddr[tail] = issue_pc;		
@@ -203,7 +205,6 @@ always @(posedge issueValid) begin
 		end
 
 		FenceOp: begin
-			/*nothing to do here*/
 		end
 
 		Exception: begin
@@ -211,6 +212,7 @@ always @(posedge issueValid) begin
 		end
 
 	endcase
+	$display("I will change the tail");
 	tail = tail + 1;
 	if (tail >= 16) tail = 0;
 	count = count + 1;
@@ -219,7 +221,7 @@ end
 
 always @(posedge clk) begin
 	#100
-	cacheWriteEnable = 1'b0;
+	memoryWriteEnable = 1'b0;
 	issueNewPCEnable = 1'b0;
 	regWriteEnable = 1'b0;
 	statusWriteEnable = 1'b0;
@@ -227,10 +229,10 @@ always @(posedge clk) begin
 	issueNewPC = 1'b0;
 	branchAddr = 32'hFFFFFFFF;
 	
-	/*$display("ROB head and tail = %d %d", head, tail);
-	$display("ready head = %d", ready[head]);*/
+	$display("ROB head and tail = %d %d", head, tail);
+	/*$display("ready head = %d", ready[head]);*/
 	if (count > 0 && ready[head] == 1'b1) begin
-		if (cacheWriteDone == 1) begin
+		if (memoryWriteDone == 1) begin
 			/*$display("optype = %b", optype[head]);
 			$display("head = %d", head);*/
 
@@ -241,8 +243,7 @@ always @(posedge clk) begin
 					#0.01
 					regWriteIndex = dest[head][4:0];
 					regWriteData = value[head];
-					regWriteType = optype[head];
-					regWriteSubType = opsubtype[head];
+					$display("what is your value??? = %d", value[head]);
 					regWriteEnable = 1'b1;
 					$display("statusResult = %d!!!!!!!!", statusResult);
 					if (statusResult == head) begin
@@ -254,9 +255,10 @@ always @(posedge clk) begin
 				end
 
 				StoreOp: begin
-					cacheWriteData = value[head];
-					cacheWriteAddr = dest[head];
-					cacheWriteEnable = 1'b1;
+					memoryWriteData = value[head];
+					memoryWriteAddr = dest[head];
+					memoryWriteType = opsubtype[head];
+					memoryWriteEnable = 1'b1;
 				end
 
 				BneOp: begin

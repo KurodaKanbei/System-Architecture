@@ -77,7 +77,7 @@ end
 
 
 always @(posedge iscast or posedge iscast2) begin
-	for (i = 0;i < 4; i=i+1) begin
+	for (i = 0; i < 4; i = i + 1) begin
 		if (rs[i][87:87] == 1'b1 && iscast == 1'b1) begin
 			if (rs[i][11:6] == robNum) begin
 				rs[i][75:44] = cdbdata;

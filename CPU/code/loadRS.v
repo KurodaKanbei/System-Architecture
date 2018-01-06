@@ -1,4 +1,4 @@
-`timescale 100ns / 10ps
+`timescale 10ps / 100fs
 /*
 	55:55 busy
 	54:49 dest
@@ -20,6 +20,7 @@ module loadRS (
 	input reset,
 
 	output reg[5:0] robNum_out,
+	output reg[2:0] type_out,
 	output reg[31:0] data_out,
 	output reg available,
 
@@ -82,17 +83,23 @@ end
 
 reg[31:0] data_tmp;
 reg[5:0] q_tmp;
+reg[5:0] currentRobNum;
 
 always @(posedge clock) begin
+	$display("I can fetch the clock!!!!!");
+	currentRobNum = destRobNum;
 	#50
+	$display("I solve out the delay");
 	breakmark = 1'b0;
 	loadEnable = 1'b0;
+	$display("loadUnit is busy = %d", busy);
 	for (i = 0;i < 4; i = i + 1) begin
 		if (rs[i][55:55] == 1'b1 && breakmark == 1'b0 && busy == 1'b0) begin
 			if (rs[i][5:0] == invalidNum) begin
 				data_out = rs[i][37:6] + offset[i];
+				type_out = rs[i][41:39];
 				robNum_out = robNum[i];
-				rs[i][50:50] = 1'b0;
+				rs[i][55:55] = 1'b0;
 				available = 1'b1;
 				breakmark = 1'b1;
 				loadEnable = 1'b1;
@@ -103,35 +110,47 @@ always @(posedge clock) begin
 end
 
 always @(posedge funcUnitEnable) begin
-	index = q;
-	#0.01
-	data_tmp = data;
-	q_tmp = q;
-	if (index < 16 && ready == 1'b1) begin
-		data_tmp = value;
-		q_tmp = invalidNum;
-	end
-	index = invalidNum;
-	breakmark = 1'b0;
-	for (i = 0; i < 4; i = i + 1) begin
-		if (rs[i][55:55] == 1'b0 && breakmark == 1'b0) begin
-			robNum[i] = destRobNum;
-			offset[i] = offset_in;
-			rs[i][55:55] = 1'b1;
-			rs[i][54:49] = cdbRobNum;
-			rs[i][47:41] = operatorType;
-			rs[i][40:38] = operatorSubType;
-			rs[i][37:6] = data_tmp;
-			rs[i][5:0] = q_tmp;
-			breakmark = 1'b1;
+	if (operatorType == loadOp) begin
+		$display("robNum = %d", destRobNum);
+		$display("q = %d", q);
+
+		index = q;
+		#0.01
+		data_tmp = data;
+		q_tmp = q;
+		if (index < 16 && ready == 1'b1) begin
+			data_tmp = value;
+			q_tmp = invalidNum;
 		end
-		available = 1'b0;
+		index = invalidNum;
 		breakmark = 1'b0;
+		$display("RobNum in loadRS**************************** = %d", destRobNum);
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][55:55] == 1'b0 && breakmark == 1'b0) begin
-					available = 1'b1;
-					breakmark = 1'b1;
-				end
+
+				robNum[i] = currentRobNum;
+				offset[i] = offset_in;
+				$display("I am coming into loadRS!!!!");
+				$display("destRobNum is = %d", robNum[i]);
+				$display("offset_is = %d", offset[i]);
+				$display("dependent = %d", q_tmp);
+				$display("position = %d", data_tmp);
+				rs[i][55:55] = 1'b1;
+				rs[i][48:42] = operatorType;
+				rs[i][41:39] = operatorSubType;
+				rs[i][38:38] = operatorFlag;
+				rs[i][37:6] = data_tmp;
+				rs[i][5:0] = q_tmp;
+				breakmark = 1'b1;
+			end
+			available = 1'b0;
+			breakmark = 1'b0;
+			for (i = 0; i < 4; i = i + 1) begin
+				if (rs[i][55:55] == 1'b0 && breakmark == 1'b0) begin
+						available = 1'b1;
+						breakmark = 1'b1;
+					end
+			end
 		end
 	end
 end
