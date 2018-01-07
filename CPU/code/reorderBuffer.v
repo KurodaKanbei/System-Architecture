@@ -87,7 +87,9 @@ module reorderBuffer (
 	input wire bneWriteEnable,
 	input wire[5:0] bneWriteIndex,
 
-	output reg worldEnd
+	output reg worldEnd,
+
+	output reg nobranch
 );
 
 parameter LUIOp = 7'b0110111;
@@ -163,6 +165,7 @@ initial begin
 	count = 5'b00000;
 	available = 1'b1;
 	resetAll = 1'b0;
+	nobranch = 1'b1;
 end
 
 assign space = tail;
@@ -183,15 +186,15 @@ always @(posedge issueValid) begin
 		end
 
 		LUIOp, AUIPCOp: begin
-			/*to be completed*/
+			nobranch = 1'b0;	
 		end
 		
 		JALOp, JALROp: begin
-			/*to be completed*/
+			nobranch = 1'b0;
 		end
 
 		BneOp: begin
-			/*to be completed*/
+			nobranch = 1'b0;
 		end
 
 		LoadOp: begin
@@ -214,7 +217,6 @@ always @(posedge issueValid) begin
 		end
 
 	endcase
-	//$display("I will change the tail");
 	tail = tail + 1;
 	if (tail >= 16) tail = 0;
 	count = count + 1;
@@ -231,29 +233,33 @@ always @(posedge clk) begin
 	issueNewPC = 1'b0;
 	branchAddr = 32'hFFFFFFFF;
 	if (count > 0 && ready[head] == 1'b1) begin
-		/*$display("optype = %b", optype[head]);
-		$display("head = %d", head);*/
+		//display("optype = %b", optype[head]);
 		case(optype[head]) 
 			CalcOp, CalcImmOp: begin
 				statusIndex = dest[head][4:0];
-				//$display("statusIndex = %d", dest[head][4:0]);
 				#0.01
 				regWriteIndex = dest[head][4:0];
 				regWriteData = value[head];
-				//$display("what is your value??? = %d", value[head]);
 				regWriteEnable = 1'b1;
-				//$display("statusResult = %d!!!!!!!!", statusResult);
+
 				if (statusResult == head) begin
-					//$display("let me release");
 					statusWriteIndex = dest[head][4:0];
 					statusWriteData = 5'b10000;
 					statusWriteEnable = 1'b1;
 				end
 			end
+		
+			LUIOp, AUIPCOp: begin
+				nobranch = 1'b1;	
+			end
+			
+			JALOp, JALROp: begin
+				nobranch = 1'b1;
+			end
+	
 			
 			LoadOp: begin
 				statusIndex = dest[head][4:0];
-				
 				#0.01
 				regWriteIndex = dest[head][4:0];
 				regWriteData = value[head];

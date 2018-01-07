@@ -83,7 +83,31 @@ module cpu();
 		$finish;
 		
 	end
-
+/*
+andi 5 5 2
+xori 5 6 1
+or 4 5 2
+andi 2 3 7
+sw 5 0 12
+xori 4 5 7
+addi 1 2 2
+xori 5 4 0
+ori 5 6 3
+sw 1 0 8
+andi 2 3 5
+sw 3 0 16
+sub 4 3 3
+sw 3 0 12
+sw 3 0 16
+sw 3 0 16
+ori 2 1 6
+addi 3 5 0
+sw 4 0 16
+or 3 3 6
+sw 5 0 4
+add 2 3 1
+xori 2 2 9
+*/
 	pcControl pcControl(
 		.clock(clock),
 		.addempty(addRS.available),
@@ -91,7 +115,7 @@ module cpu();
 		.swempty(storeRS.available),
 		.robempty(reorderBuffer.available),
 		.bneempty(bneRS.available),
-		
+		.nobranch(reorderBuffer.nobranch),	
 		.operatorType(instructionDecode.operatorType),
 		.operatorSubType(instructionDecode.operatorSubType),
 		.operatorFlag(instructionDecode.operatorFlag),

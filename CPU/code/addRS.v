@@ -164,9 +164,9 @@ always @(posedge clock) begin
 					robNum_out = rs[i][92:87];
 					$display("CDB = index%d robNum%d", i, robNum_out);
 					if (rs[i][79:77] == Add) begin
-						/*$display("Im doing Plus!!!!!!! Plus!!!!!!!!!!");
+						$display("Im doing Plus!!!!!!! Plus!!!!!!!!!!");
 						$display("data1 %d && data2 %d", rs[i][75:44], rs[i][43:12]);
-						$display("opFlag", rs[i][76:76]);*/
+						$display("opFlag", rs[i][76:76]);
 						data_out = rs[i][75:44] + rs[i][43:12]; 
 					end
 					if (rs[i][79:77] == Sll) begin
@@ -222,12 +222,17 @@ always @(posedge funcUnitEnable) begin
 			data1_tmp = value;
 			q1_tmp = invalidNum;
 		end
-		index = q2;
-		#0.01
-		data2_tmp = data2;
-		q2_tmp = q2;
-		if (index < 16 && ready == 1'b1) begin
-			data2_tmp = value;
+		if (operatorType == CalcOp) begin
+			index = q2;
+			#0.01
+			data2_tmp = data2;
+			q2_tmp = q2;
+			if (index < 16 && ready == 1'b1) begin
+				data2_tmp = value;
+				q2_tmp = invalidNum;
+			end
+		end else begin
+			data2_tmp = data2;
 			q2_tmp = invalidNum;
 		end
 		//$display("q1 = %d q2 = %d", q1, q2);

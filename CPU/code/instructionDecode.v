@@ -101,7 +101,7 @@ always @(posedge decodePulse) begin
 				operatorFlag = instr[30:30];
 			end else begin
 				data2 = {{20{instr[31:31]}}, instr[31:20]};
-				//$display("I can see you! = %d", data2);	
+				$display("I can see you! = %d", data2);	
 			end
 		end
 		if (operatorType == CalcOp) begin
