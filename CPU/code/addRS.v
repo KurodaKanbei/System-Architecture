@@ -47,6 +47,8 @@ module addRS (
 
 parameter CalcImmOp = 7'b0010011;
 parameter CalcOp = 7'b0110011;
+parameter LUIOp = 7'b0110111;
+parameter AUIPCOp = 7'b0010111;
 parameter addi = 3'b000;
 parameter slti = 3'b010;
 parameter sltiu = 3'b011;
@@ -125,10 +127,8 @@ always @(posedge clock) begin
 			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
 				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 					robNum_out = rs[i][92:87];
-					$display("CDB = index%d robNum%d", i, robNum_out);
 					if (rs[i][79:77] == Add) begin
 						if (rs[i][76:76] == 1'b0) data_out = rs[i][75:44] + rs[i][43:12]; else data_out = rs[i][75:44] - rs[i][43:12];
-						$display("Data_out = %d", data_out);
 					end
 					if (rs[i][79:77] == Sll) begin
 						data_out = rs[i][75:44] << rs[i][43:12];						
@@ -162,11 +162,7 @@ always @(posedge clock) begin
 			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
 				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 					robNum_out = rs[i][92:87];
-					$display("CDB = index%d robNum%d", i, robNum_out);
 					if (rs[i][79:77] == Add) begin
-						$display("Im doing Plus!!!!!!! Plus!!!!!!!!!!");
-						$display("data1 %d && data2 %d", rs[i][75:44], rs[i][43:12]);
-						$display("opFlag", rs[i][76:76]);
 						data_out = rs[i][75:44] + rs[i][43:12]; 
 					end
 					if (rs[i][79:77] == Sll) begin
@@ -188,9 +184,7 @@ always @(posedge clock) begin
 						data_out = rs[i][75:44] | rs[i][43:12];
 					end
 					if (rs[i][79:77] == And) begin
-						$display("^^^^^^^^^^^^^^^^^^^^^^^^^^^data1 = %d data2= %d", rs[i][75:44], rs[i][43:12]);
 						data_out = rs[i][75:44] & rs[i][43:12];
-						$display("data_out = %d", data_out);
 					end
 					broadcast = 1'b1;
 					available = 1'b1;
@@ -199,7 +193,18 @@ always @(posedge clock) begin
 				end
 			end
 		end
-
+		if (rs[i][86:80] == AUIPCOp || rs[i][86:80] == LUIOp) begin
+			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
+				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
+					robNum_out = rs[i][92:87];
+					data_out = rs[i][75:44];
+					broadcast = 1'b1;
+					available = 1'b1;
+					breakmark = 1'b1;
+					rs[i][93:93] = 1'b0;
+				end
+			end
+		end
 	end
 end
 
@@ -209,18 +214,19 @@ reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
-	if (operatorType == CalcOp || operatorType == CalcImmOp) begin
-		//$display("robNum = %d", robNum);
-		//$display("q1 = %d q2 = %d", q1, q2);
-		//$display("data1 = %d &&&&&&& data2 = %d", data1, data2);
-
-		index = q1;
-		#0.01
-		data1_tmp = data1;
-		q1_tmp = q1;
-		if (index < 16 && ready == 1'b1) begin
-			data1_tmp = value;
-			q1_tmp = invalidNum;
+	if (operatorType == CalcOp || operatorType == CalcImmOp || operatorType == AUIPCOp || operatorType == LUIOp) begin
+		if (operatorType == CalcOp || operatorType == CalcImmOp) begin
+			index = q1;
+			#0.01
+			data1_tmp = data1;
+			q1_tmp = q1;
+			if (index < 16 && ready == 1'b1) begin
+				data1_tmp = value;
+				q1_tmp = invalidNum;
+			end
+		end else begin
+			data1_tmp = data1;
+			q1_tmp = q1;
 		end
 		if (operatorType == CalcOp) begin
 			index = q2;
@@ -237,14 +243,14 @@ always @(posedge funcUnitEnable) begin
 		end
 		//$display("q1 = %d q2 = %d", q1, q2);
 		//$display("data1_tmp = %d &&&&&&& data2_tmp = %d", data1_tmp, data2_tmp);
-		$display("q1 = %d", q1);
-		$display("q2 = %d", q2);
+		//$display("q1 = %d", q1);
+		//$display("q2 = %d", q2);
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
-				$display("robNum in addRS = %d", rs[i][92:87]);
+				//$display("robNum in addRS = %d", rs[i][92:87]);
 				//$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
 				rs[i][79:77] = operatorSubType;

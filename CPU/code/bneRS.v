@@ -14,6 +14,8 @@
 
 module bneRS (
 	input wire clock,
+	input wire[31:0] pcNumber,
+
 	input wire[6:0] operatorType,
 	input wire[2:0] operatorSubType,
 	input wire operatorFlag,

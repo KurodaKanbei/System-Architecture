@@ -16,40 +16,6 @@
 `include "reorderBuffer.v"
 `include "branchPredictor.v"
 
-/*
-add 3 2 3
-or 4 3 2
-lw 4 0 4
-addi 2 3 6
-andi 4 4 7
-lw 5 0 12
-sw 5 0 12
-or 1 4 3
-xori 1 4 6
-xori 6 6 1
-andi 3 4 8
-xor 5 1 5
-sw 3 0 8
-sw 6 0 16
-xori 5 1 8
-lw 3 0 8
-sw 3 0 4
-lw 4 0 12
-xori 4 5 6
-addi 2 2 2
-lw 4 0 4
-sw 1 0 8
-or 1 4 2
-ori 4 1 2
-ori 1 3 1
-addi 3 2 2
-ori 1 4 0
-xor 5 4 3
-xori 2 3 9
-xori 6 6 8
-sw 2 0 4
-sw 5 0 4
-*/
 module cpu();
 	reg clock;
 	wire exception;
@@ -60,7 +26,7 @@ module cpu();
 		clock = 1'b0;
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
-		
+
 	end
 	
 	always #100 begin
@@ -83,31 +49,7 @@ module cpu();
 		$finish;
 		
 	end
-/*
-andi 5 5 2
-xori 5 6 1
-or 4 5 2
-andi 2 3 7
-sw 5 0 12
-xori 4 5 7
-addi 1 2 2
-xori 5 4 0
-ori 5 6 3
-sw 1 0 8
-andi 2 3 5
-sw 3 0 16
-sub 4 3 3
-sw 3 0 12
-sw 3 0 16
-sw 3 0 16
-ori 2 1 6
-addi 3 5 0
-sw 4 0 16
-or 3 3 6
-sw 5 0 4
-add 2 3 1
-xori 2 2 9
-*/
+
 	pcControl pcControl(
 		.clock(clock),
 		.addempty(addRS.available),
@@ -115,7 +57,8 @@ xori 2 2 9
 		.swempty(storeRS.available),
 		.robempty(reorderBuffer.available),
 		.bneempty(bneRS.available),
-		.nobranch(reorderBuffer.nobranch),	
+		.nobranch(reorderBuffer.nobranch),
+		.nostore(reorderBuffer.nostore),
 		.operatorType(instructionDecode.operatorType),
 		.operatorSubType(instructionDecode.operatorSubType),
 		.operatorFlag(instructionDecode.operatorFlag),
@@ -128,6 +71,7 @@ xori 2 2 9
 
 	instructionDecode instructionDecode(
 		.clock(clock),
+		.pcNumber(pcControl.pc),
 		.decodePulse(pcControl.decodePulse),
 		.instr(instructionFetch.instr),
 		.available(pcControl.available)
@@ -255,6 +199,7 @@ xori 2 2 9
 
 	bneRS bneRS(
 		.clock(clock),
+		.pcNumber(pcControl.pc),
 		.operatorType(instructionDecode.operatorType),
 		.robNum(reorderBuffer.space),
 		.data1(regfile.data1),
@@ -319,6 +264,7 @@ xori 2 2 9
 
 	reorderBuffer reorderBuffer(
 		.clk(clock),					
+		.pcNumber(pcControl.pc),
 
 		.issue_opType(instructionDecode.operatorType),
 		.issue_opSubType(instructionDecode.operatorSubType),

@@ -109,9 +109,11 @@ always @(posedge clock) begin
 end
 
 always @(posedge funcUnitEnable) begin
+	$display("functionEnable!!!!!!!!!!!!!!!!!!!!!");
 	if (operatorType == loadOp) begin
-		//$display("robNum = %d", destRobNum);
-		//$display("q = %d", q);
+		
+		$display("robNum = %d", destRobNum);
+		$display("q = %d", q);
 
 		index = q;
 		#0.01
@@ -129,11 +131,11 @@ always @(posedge funcUnitEnable) begin
 
 				robNum[i] = destRobNum;
 				offset[i] = offset_in;
-				/*$display("I am coming into loadRS!!!!");
+				$display("I am coming into loadRS!!!!");
 				$display("destRobNum is = %d", robNum[i]);
 				$display("offset_is = %d", offset[i]);
 				$display("dependent = %d", q_tmp);
-				$display("position = %d", data_tmp);*/
+				$display("position = %d", data_tmp);
 				rs[i][55:55] = 1'b1;
 				rs[i][48:42] = operatorType;
 				rs[i][41:39] = operatorSubType;

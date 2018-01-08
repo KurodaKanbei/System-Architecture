@@ -8,6 +8,7 @@ module pcControl (
 	input wire robempty,
 	input wire bneempty,
 	input wire nobranch,
+	input wire nostore,
 	input wire[6:0] operatorType,
 	input wire[2:0] operatorSubType,
 	input wire operatorFlag,
@@ -35,7 +36,7 @@ always @(posedge pcChange) begin
 end
 
 always @(posedge clock) begin
-	available = addempty & lwempty & swempty & robempty & bneempty && nobranch;
+	available = addempty & lwempty & swempty & robempty & bneempty & nobranch & nostore;
 	if (available == 1) begin
 		decodePulse = 1'b0;
 		pc = pc + 1;

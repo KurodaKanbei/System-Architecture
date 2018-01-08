@@ -6,7 +6,7 @@
 :vpi_module "vhdl_sys";
 :vpi_module "v2005_math";
 :vpi_module "va_math";
-S_0x7fb458c0afc0 .scope module, "pcControl" "pcControl" 2 3;
+S_0x7fa6dd6020f0 .scope module, "pcControl" "pcControl" 2 3;
  .timescale -11 -13;
     .port_info 0 /INPUT 1 "clock"
     .port_info 1 /INPUT 1 "addempty"
@@ -23,84 +23,84 @@ S_0x7fb458c0afc0 .scope module, "pcControl" "pcControl" 2 3;
     .port_info 12 /OUTPUT 1 "decodePulse"
     .port_info 13 /INPUT 1 "pcChange"
     .port_info 14 /INPUT 32 "changeData"
-P_0x7fb458c054a0 .param/l "bneOp" 0 2 23, C4<1100011>;
-o0x105d83008 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c0b310_0 .net "addempty", 0 0, o0x105d83008;  0 drivers
-v0x7fb458c1af90_0 .var "available", 0 0;
-o0x105d83068 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b030_0 .net "bneempty", 0 0, o0x105d83068;  0 drivers
-o0x105d83098 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
-v0x7fb458c1b0c0_0 .net "changeData", 31 0, o0x105d83098;  0 drivers
-o0x105d830c8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b170_0 .net "clock", 0 0, o0x105d830c8;  0 drivers
-v0x7fb458c1b250_0 .var "decodePulse", 0 0;
-o0x105d83128 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b2f0_0 .net "lwempty", 0 0, o0x105d83128;  0 drivers
-L_0x105db5008 .functor BUFT 1, C4<1>, C4<0>, C4<0>, C4<0>;
-v0x7fb458c1b390_0 .net "nobrach", 0 0, L_0x105db5008;  1 drivers
-o0x105d83188 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b430_0 .net "nobranch", 0 0, o0x105d83188;  0 drivers
-o0x105d831b8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b540_0 .net "operatorFlag", 0 0, o0x105d831b8;  0 drivers
-o0x105d831e8 .functor BUFZ 3, C4<zzz>; HiZ drive
-v0x7fb458c1b5d0_0 .net "operatorSubType", 2 0, o0x105d831e8;  0 drivers
-o0x105d83218 .functor BUFZ 7, C4<zzzzzzz>; HiZ drive
-v0x7fb458c1b680_0 .net "operatorType", 6 0, o0x105d83218;  0 drivers
-v0x7fb458c1b730_0 .var "pc", 31 0;
-o0x105d83278 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b7e0_0 .net "pcChange", 0 0, o0x105d83278;  0 drivers
-o0x105d832a8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b880_0 .net "robempty", 0 0, o0x105d832a8;  0 drivers
-o0x105d832d8 .functor BUFZ 1, C4<z>; HiZ drive
-v0x7fb458c1b920_0 .net "swempty", 0 0, o0x105d832d8;  0 drivers
-E_0x7fb458c054e0 .event posedge, v0x7fb458c1b170_0;
-E_0x7fb458c03570 .event posedge, v0x7fb458c1b7e0_0;
-    .scope S_0x7fb458c0afc0;
+P_0x7fa6dd600230 .param/l "bneOp" 0 2 23, C4<1100011>;
+o0x10079f008 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd602410_0 .net "addempty", 0 0, o0x10079f008;  0 drivers
+v0x7fa6dd6124c0_0 .var "available", 0 0;
+o0x10079f068 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612560_0 .net "bneempty", 0 0, o0x10079f068;  0 drivers
+o0x10079f098 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x7fa6dd6125f0_0 .net "changeData", 31 0, o0x10079f098;  0 drivers
+o0x10079f0c8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd6126a0_0 .net "clock", 0 0, o0x10079f0c8;  0 drivers
+v0x7fa6dd612780_0 .var "decodePulse", 0 0;
+o0x10079f128 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612820_0 .net "lwempty", 0 0, o0x10079f128;  0 drivers
+L_0x1007d1008 .functor BUFT 1, C4<1>, C4<0>, C4<0>, C4<0>;
+v0x7fa6dd6128c0_0 .net "nobrach", 0 0, L_0x1007d1008;  1 drivers
+o0x10079f188 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612960_0 .net "nobranch", 0 0, o0x10079f188;  0 drivers
+o0x10079f1b8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612a70_0 .net "operatorFlag", 0 0, o0x10079f1b8;  0 drivers
+o0x10079f1e8 .functor BUFZ 3, C4<zzz>; HiZ drive
+v0x7fa6dd612b00_0 .net "operatorSubType", 2 0, o0x10079f1e8;  0 drivers
+o0x10079f218 .functor BUFZ 7, C4<zzzzzzz>; HiZ drive
+v0x7fa6dd612bb0_0 .net "operatorType", 6 0, o0x10079f218;  0 drivers
+v0x7fa6dd612c60_0 .var "pc", 31 0;
+o0x10079f278 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612d10_0 .net "pcChange", 0 0, o0x10079f278;  0 drivers
+o0x10079f2a8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612db0_0 .net "robempty", 0 0, o0x10079f2a8;  0 drivers
+o0x10079f2d8 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fa6dd612e50_0 .net "swempty", 0 0, o0x10079f2d8;  0 drivers
+E_0x7fa6dd6004f0 .event posedge, v0x7fa6dd6126a0_0;
+E_0x7fa6dd6023d0 .event posedge, v0x7fa6dd612d10_0;
+    .scope S_0x7fa6dd6020f0;
 T_0 ;
     %pushi/vec4 4294967295, 0, 32;
-    %store/vec4 v0x7fb458c1b730_0, 0, 32;
+    %store/vec4 v0x7fa6dd612c60_0, 0, 32;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fb458c1af90_0, 0, 1;
+    %store/vec4 v0x7fa6dd6124c0_0, 0, 1;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fb458c1b250_0, 0, 1;
+    %store/vec4 v0x7fa6dd612780_0, 0, 1;
     %end;
     .thread T_0;
-    .scope S_0x7fb458c0afc0;
+    .scope S_0x7fa6dd6020f0;
 T_1 ;
-    %wait E_0x7fb458c03570;
-    %load/vec4 v0x7fb458c1b0c0_0;
+    %wait E_0x7fa6dd6023d0;
+    %load/vec4 v0x7fa6dd6125f0_0;
     %subi 1, 0, 32;
-    %store/vec4 v0x7fb458c1b730_0, 0, 32;
+    %store/vec4 v0x7fa6dd612c60_0, 0, 32;
     %jmp T_1;
     .thread T_1;
-    .scope S_0x7fb458c0afc0;
+    .scope S_0x7fa6dd6020f0;
 T_2 ;
-    %wait E_0x7fb458c054e0;
-    %load/vec4 v0x7fb458c0b310_0;
-    %load/vec4 v0x7fb458c1b2f0_0;
+    %wait E_0x7fa6dd6004f0;
+    %load/vec4 v0x7fa6dd602410_0;
+    %load/vec4 v0x7fa6dd612820_0;
     %and;
-    %load/vec4 v0x7fb458c1b920_0;
+    %load/vec4 v0x7fa6dd612e50_0;
     %and;
-    %load/vec4 v0x7fb458c1b880_0;
+    %load/vec4 v0x7fa6dd612db0_0;
     %and;
-    %load/vec4 v0x7fb458c1b030_0;
+    %load/vec4 v0x7fa6dd612560_0;
     %and;
-    %load/vec4 v0x7fb458c1b430_0;
+    %load/vec4 v0x7fa6dd612960_0;
     %and;
-    %store/vec4 v0x7fb458c1af90_0, 0, 1;
-    %load/vec4 v0x7fb458c1af90_0;
+    %store/vec4 v0x7fa6dd6124c0_0, 0, 1;
+    %load/vec4 v0x7fa6dd6124c0_0;
     %pad/u 32;
     %cmpi/e 1, 0, 32;
     %jmp/0xz  T_2.0, 4;
     %pushi/vec4 0, 0, 1;
-    %store/vec4 v0x7fb458c1b250_0, 0, 1;
-    %load/vec4 v0x7fb458c1b730_0;
+    %store/vec4 v0x7fa6dd612780_0, 0, 1;
+    %load/vec4 v0x7fa6dd612c60_0;
     %addi 1, 0, 32;
-    %store/vec4 v0x7fb458c1b730_0, 0, 32;
+    %store/vec4 v0x7fa6dd612c60_0, 0, 32;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fb458c1b250_0, 0, 1;
+    %store/vec4 v0x7fa6dd612780_0, 0, 1;
 T_2.0 ;
-    %vpi_call 2 44 "$display", "PCnumber = %d", v0x7fb458c1b730_0 {0 0 0};
+    %vpi_call 2 44 "$display", "PCnumber = %d", v0x7fa6dd612c60_0 {0 0 0};
     %jmp T_2;
     .thread T_2;
 # The file index is used to find the file name in the following table.

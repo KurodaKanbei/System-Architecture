@@ -29,10 +29,10 @@ end
 
 
 always @(posedge writeRequest) begin
-	/*$display("memory Write is coming!!!!!");
+	$display("memory Write is coming!!!!!");
 	$display("Address = %d", writeAddress);
 	$display("Data = %d", writeData);
-	$display("WriteType = %b", writeType);*/
+	$display("WriteType = %b", writeType);
 	if (writeType == SBOp) begin
 		mem[writeAddress] = writeData[7:0];
 	end

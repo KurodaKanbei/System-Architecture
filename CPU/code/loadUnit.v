@@ -37,8 +37,8 @@ always @(posedge loadEnable) begin
 	readEnable = 1'b1;
 	#0.01
 	robNum_out = robNum;
-	//$display("readaddress in loadUnit = %d", addr_out);
-	//$display("loadUnit data_in = %d", data_in);	
+	$display("readaddress in loadUnit = %d", addr_out);
+	$display("loadUnit data_in = %d", data_in);	
 	case (loadType)
 		LWOp: cdbdata = data_in; 
 		LBOp: cdbdata = {{24{data_in[7:7]}}, data_in[7:0]}; 

@@ -6,7 +6,7 @@
 
 module reorderBuffer (
 	input wire clk,
-
+	input wire[31:0] pcNumber, 
 	input wire[6:0] issue_opType,
 	input wire[2:0] issue_opSubType,
 	input wire issue_opFlag,
@@ -89,7 +89,8 @@ module reorderBuffer (
 
 	output reg worldEnd,
 
-	output reg nobranch
+	output reg nobranch,
+	output reg nostore
 );
 
 parameter LUIOp = 7'b0110111;
@@ -166,6 +167,7 @@ initial begin
 	available = 1'b1;
 	resetAll = 1'b0;
 	nobranch = 1'b1;
+	nostore = 1'b1;
 end
 
 assign space = tail;
@@ -185,12 +187,23 @@ always @(posedge issueValid) begin
 			statusWriteEnable = 1'b1;
 		end
 
-		LUIOp, AUIPCOp: begin
+		LUIOp: begin
 			nobranch = 1'b0;	
 		end
 		
-		JALOp, JALROp: begin
+		AUIPCOp: begin
 			nobranch = 1'b0;
+		end
+
+		JALOp: begin
+			dest[tail] = {27'b0, issue_destReg};
+			statusWriteIndex = issue_destReg;
+			statusWriteData = tail;
+			statusWriteEnable = 1'b1;
+			nobranch = 1'b0;
+		end
+
+		JALROp: begin
 		end
 
 		BneOp: begin
@@ -205,7 +218,7 @@ always @(posedge issueValid) begin
 		end
 
 		StoreOp: begin
-
+			nostore = 1'b0;
 		end
 
 		FenceOp: begin
@@ -249,14 +262,21 @@ always @(posedge clk) begin
 				end
 			end
 		
-			LUIOp, AUIPCOp: begin
+			LUIOp: begin
 				nobranch = 1'b1;	
 			end
-			
-			JALOp, JALROp: begin
+
+			AUIPCOp: begin
 				nobranch = 1'b1;
 			end
-	
+
+			JALOp: begin
+				nobranch = 1'b1;
+			end
+			
+			JALROp: begin
+				nobranch = 1'b1;	
+			end
 			
 			LoadOp: begin
 				statusIndex = dest[head][4:0];
@@ -277,6 +297,7 @@ always @(posedge clk) begin
 				memoryWriteAddr = dest[head];
 				memoryWriteType = opsubtype[head];
 				memoryWriteEnable = 1'b1;
+				nostore = 1'b1;
 			end
 
 			BneOp: begin

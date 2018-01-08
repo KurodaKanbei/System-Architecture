@@ -2,6 +2,8 @@
 
 module instructionDecode(
 	input wire clock,
+	input wire[31:0] pcNumber,
+
 	input wire decodePulse,
 	input wire[31:0] instr,
 	input wire available,
@@ -57,11 +59,11 @@ always @(posedge decodePulse) begin
 		operatorType = instr[6:0];
 		if (operatorType == LUIOp) begin
 			destreg = instr[11:7];	
-			data1 = {{20{instr[31:31]}}, instr[31:12]};
+			data1 = {instr[31:12], 12'b0};
 		end
 		if (operatorType == AUIPCOp) begin
 			destreg = instr[11:7];	
-			data1 = {{20{instr[31:31]}}, instr[31:12]};		
+			data1 = {instr[31:12], 12'b0} + {pcNumber[29:0], 2'b00};		
 		end
 		if (operatorType == JALOp) begin
 			destreg = instr[11:7];	
@@ -110,7 +112,6 @@ always @(posedge decodePulse) begin
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
 			operatorFlag = instr[30:30];
-			//$display("Decoding!!!!!!!!! opflag %d", operatorFlag);
 		end
 		if (operatorType == FenceOp) begin
 			operatorSubType = instr[14:12];
