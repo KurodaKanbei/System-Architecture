@@ -54,8 +54,6 @@ module reorderBuffer (
 	output reg[31:0] issueNewPC,
 	output reg issueNewPCEnable,
 
-	output reg resetAll,
-
 	input wire storeEnable,
 	input wire[5:0] storeRobIndex,
 	input wire[31:0] storeDest,
@@ -165,7 +163,6 @@ initial begin
 	end
 	count = 5'b00000;
 	available = 1'b1;
-	resetAll = 1'b0;
 	nobranch = 1'b1;
 	nostore = 1'b1;
 end
@@ -188,11 +185,13 @@ always @(posedge issueValid) begin
 		end
 
 		LUIOp: begin
-			nobranch = 1'b0;	
+			dest[tail] = {27'b0, issue_destReg};
+			statusWriteIndex = issue_destReg;
+			statusWriteData = tail;
+			statusWriteEnable = 1'b1;
 		end
 		
 		AUIPCOp: begin
-			nobranch = 1'b0;
 		end
 
 		JALOp: begin
@@ -248,7 +247,7 @@ always @(posedge clk) begin
 	if (count > 0 && ready[head] == 1'b1) begin
 		//display("optype = %b", optype[head]);
 		case(optype[head]) 
-			CalcOp, CalcImmOp: begin
+			CalcOp, CalcImmOp, LUIOp, AUIPCOp: begin
 				statusIndex = dest[head][4:0];
 				#0.01
 				regWriteIndex = dest[head][4:0];
@@ -260,14 +259,6 @@ always @(posedge clk) begin
 					statusWriteData = 5'b10000;
 					statusWriteEnable = 1'b1;
 				end
-			end
-		
-			LUIOp: begin
-				nobranch = 1'b1;	
-			end
-
-			AUIPCOp: begin
-				nobranch = 1'b1;
 			end
 
 			JALOp: begin
@@ -316,7 +307,6 @@ always @(posedge clk) begin
 	statusWriteEnable = 1'b0;
 	branchWriteEnable = 1'b0;
 	regWriteEnable = 1'b0;
-	resetAll = 1'b0;
 end
 
 always @(adderIndexIn) begin

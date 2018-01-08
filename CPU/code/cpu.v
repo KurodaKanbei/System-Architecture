@@ -26,7 +26,6 @@ module cpu();
 		clock = 1'b0;
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
-
 	end
 	
 	always #100 begin
@@ -116,7 +115,6 @@ module cpu();
 		.data2(regfile.data2),
 		.q1(regstatus.q1),
 		.q2(regstatus.q2),
-		.reset(reorderBuffer.resetAll),
 		
 		.CDBiscast(CDBadd.iscast_out),
 		.CDBrobNum(CDBadd.robNum_out),
@@ -141,7 +139,6 @@ module cpu();
 		.q(regstatus.q1),
 		.destRobNum(reorderBuffer.space),
 		
-		.reset(reorderBuffer.resetAll),
 		
 		.cdbIscast(CDBadd.iscast_out),
 		.cdbData(CDBadd.data_out),
@@ -180,7 +177,7 @@ module cpu();
 		.q1(regstatus.q1),
 		.data2(regfile.data2),
 		.q2(regstatus.q2),
-		.reset(reorderBuffer.resetAll),
+		
 		.offset_in(regfile.offset),
 		.destRobNum(reorderBuffer.space),
 		
@@ -206,7 +203,6 @@ module cpu();
 		.data2(regfile.data2),
 		.q1(regstatus.q1),
 		.q2(regstatus.q2),
-		.reset(reorderBuffer.resetAll),
 		
 		.CDBiscast(CDBadd.iscast_out),
 		.CDBrobNum(CDBadd.robNum_out),

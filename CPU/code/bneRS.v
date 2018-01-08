@@ -25,7 +25,6 @@ module bneRS (
 	input wire[31:0] data2,
 	input wire[5:0] q1,
 	input wire[5:0] q2,
-	input wire reset,
 
 	input wire CDBiscast,
 	input wire[5:0] CDBrobNum,
@@ -67,14 +66,6 @@ initial begin
 	end
 	available = 1'b1;
 	index = invalidNum;
-end
-
-always @(posedge reset) begin
-	robNum_out = invalidNum;
-	for (i = 0; i < 4; i = i + 1) begin
-		rs[i][93:93] = 1'b0;
-	end
-	available = 1'b1;
 end
 
 always @(posedge CDBiscast or posedge CDBiscast2) begin

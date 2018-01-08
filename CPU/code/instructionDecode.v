@@ -58,22 +58,23 @@ always @(posedge decodePulse) begin
 		ROBissueValid = 1'b1;
 		operatorType = instr[6:0];
 		if (operatorType == LUIOp) begin
+			$display("LUIOp is coming!!!!!!!!");
 			destreg = instr[11:7];	
-			data1 = {instr[31:12], 12'b0};
+			data2 = {instr[31:12], 12'b0};
 		end
 		if (operatorType == AUIPCOp) begin
 			destreg = instr[11:7];	
-			data1 = {instr[31:12], 12'b0} + {pcNumber[29:0], 2'b00};		
+			data2 = {instr[31:12], 12'b0} + {pcNumber[29:0], 2'b00};		
 		end
 		if (operatorType == JALOp) begin
 			destreg = instr[11:7];	
-			data1 = {{13{instr[31:31]}}, instr[19:12], instr[20:20], instr[30:21]};		
+			data2 = {{13{instr[31:31]}}, instr[19:12], instr[20:20], instr[30:21]};		
 		end
 		if (operatorType == JALROp) begin
 			destreg = instr[11:7];	
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
-			data1 = {{20{instr[31:31]}}, instr[31:20]};		
+			data2 = {{20{instr[31:31]}}, instr[31:20]};		
 		end
 		if (operatorType == BEQOp) begin
 			operatorSubType = instr[14:12];

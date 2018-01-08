@@ -18,11 +18,11 @@ module addRS (
 	input wire[2:0] operatorSubType,
 	input wire operatorFlag, 
 	input wire[5:0] robNum,
+	
 	input wire[31:0] data1,
 	input wire[31:0] data2,
 	input wire[5:0] q1,
 	input wire[5:0] q2,
-	input wire reset,
 
 	input wire CDBiscast,
 	input wire[5:0] CDBrobNum,
@@ -82,15 +82,6 @@ initial begin
 	end
 	available = 1'b1;
 	index = invalidNum;
-end
-
-always@(posedge reset) begin
-	broadcast = 1'b0;
-	robNum_out = invalidNum;
-	for (i = 0; i < 4; i = i + 1) begin
-		rs[i][93:93] = 1'b0;
-	end
-	available = 1'b1;
 end
 
 always @(posedge CDBiscast or CDBiscast2) begin
@@ -197,7 +188,7 @@ always @(posedge clock) begin
 			if (rs[i][93:93] == 1'b1 && breakmark == 1'b0) begin
 				if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 					robNum_out = rs[i][92:87];
-					data_out = rs[i][75:44];
+					data_out = rs[i][43:12];
 					broadcast = 1'b1;
 					available = 1'b1;
 					breakmark = 1'b1;
@@ -250,15 +241,15 @@ always @(posedge funcUnitEnable) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
-				//$display("robNum in addRS = %d", rs[i][92:87]);
+				$display("robNum in addRS = %d", rs[i][92:87]);
 				//$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
 				rs[i][79:77] = operatorSubType;
 				rs[i][76:76] = operatorFlag;
 				rs[i][75:44] = data1_tmp;
 				rs[i][43:12] = data2_tmp;
-				//$display("reservation data1 = %d", rs[i][75:44]);
-				//$display("reservation data2 = %d", rs[i][43:12]);
+				$display("reservation data1 = %d", rs[i][75:44]);
+				$display("reservation data2 = %d", rs[i][43:12]);
 				rs[i][11:6] = q1_tmp;
 				rs[i][5:0] = q2_tmp;
 				//$display("reservation q1 = %d", rs[i][11:6]);

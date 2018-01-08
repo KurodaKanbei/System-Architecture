@@ -17,8 +17,6 @@ module loadRS (
 	input wire[5:0] q,
 	input wire[5:0] destRobNum,
 
-	input reset,
-
 	output reg[5:0] robNum_out,
 	output reg[2:0] type_out,
 	output reg[31:0] data_out,
@@ -68,7 +66,7 @@ end
 
 reg breakmark;
 
-always @(posedge reset) begin
+always @(posedge cdbIscast or posedge cdbIscast2) begin
 	for (i = 0; i < 4; i = i + 1) begin
 		if (rs[i][55:55] == 1'b1 && cdbIscast == 1'b1 && rs[i][5:0] == cdbRobNum) begin
 		rs[i][37:6] = cdbData;
@@ -85,12 +83,9 @@ reg[31:0] data_tmp;
 reg[5:0] q_tmp;
 
 always @(posedge clock) begin
-	//$display("I can fetch the clock!!!!!");
 	#50
-	//$display("I solve out the delay");
 	breakmark = 1'b0;
 	loadEnable = 1'b0;
-	//$display("loadUnit is busy = %d", busy);
 	for (i = 0;i < 4; i = i + 1) begin
 		if (rs[i][55:55] == 1'b1 && breakmark == 1'b0 && busy == 1'b0) begin
 			if (rs[i][5:0] == invalidNum) begin
@@ -109,7 +104,6 @@ always @(posedge clock) begin
 end
 
 always @(posedge funcUnitEnable) begin
-	$display("functionEnable!!!!!!!!!!!!!!!!!!!!!");
 	if (operatorType == loadOp) begin
 		
 		$display("robNum = %d", destRobNum);

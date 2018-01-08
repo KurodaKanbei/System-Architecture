@@ -106,7 +106,7 @@ int main(){
 		rs2=cmds[cur].rs2;
 		imm=cmds[cur].imm;
 		if(instr=="lui"){
-			reg[rd]=imm;
+			reg[rd]=imm * (1 << 12);
 		}
 		if(instr=="lw"){
 			reg[rd]=mem[(reg[rs1]+imm)/4];

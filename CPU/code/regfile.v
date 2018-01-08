@@ -45,8 +45,11 @@ parameter LHUOp = 3'b101;
 parameter SBOp = 3'b000;
 parameter SHOp = 3'b001;
 parameter SWOp = 3'b010;
+parameter LUIOp = 7'b0110111;
+parameter AUIPCOp = 7'b0010111;
 
 reg[31:0] mem[0:31];
+
 integer i;
 
 initial begin
@@ -78,6 +81,10 @@ always @(posedge regEnable) begin
 		data1 = mem[reg1];
 		data2 = mem[reg2];
 	end
+	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
+		data1 = data1_in;
+		data2 = data2_in;
+	end
 end
 
 always @(posedge ROBwriteEnable) begin
@@ -101,6 +108,10 @@ always @(posedge ROBwriteEnable) begin
 	if (operatorType == BneOp) begin
 		data1 = mem[reg1];
 		data2 = mem[reg2];
+	end
+	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
+		data1 = data1_in;
+		data2 = data2_in;
 	end
 end
 
