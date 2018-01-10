@@ -27,7 +27,7 @@ parameter LUIOp = 7'b0110111;
 parameter AUIPCOp = 7'b0010111;
 parameter JALOp = 7'b1101111;
 parameter JALROp = 7'b1100111;
-parameter BEQOp = 7'b1100111;
+parameter BneOp = 7'b1100011;
 parameter LoadOp = 7'b0000011;
 parameter StoreOp = 7'b0100011;
 parameter CalcImmOp = 7'b0010011;
@@ -58,13 +58,12 @@ always @(posedge decodePulse) begin
 		ROBissueValid = 1'b1;
 		operatorType = instr[6:0];
 		if (operatorType == LUIOp) begin
-			$display("LUIOp is coming!!!!!!!!");
 			destreg = instr[11:7];	
 			data2 = {instr[31:12], 12'b0};
 		end
 		if (operatorType == AUIPCOp) begin
 			destreg = instr[11:7];	
-			data2 = {instr[31:12], 12'b0} + {pcNumber[29:0], 2'b00};		
+			data2 = {instr[31:12], 12'b0} + pcNumber[31:0];		
 		end
 		if (operatorType == JALOp) begin
 			destreg = instr[11:7];	
@@ -76,11 +75,13 @@ always @(posedge decodePulse) begin
 			reg1 = instr[19:15];
 			data2 = {{20{instr[31:31]}}, instr[31:20]};		
 		end
-		if (operatorType == BEQOp) begin
+		if (operatorType == BneOp) begin
+			$display("instruction = %b", instr);
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
 			data2 = {{21{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8]};
+			$display("very ok = %d", instr);
 		end
 		if (operatorType == LoadOp) begin
 			destreg = instr[11:7];
@@ -104,7 +105,6 @@ always @(posedge decodePulse) begin
 				operatorFlag = instr[30:30];
 			end else begin
 				data2 = {{20{instr[31:31]}}, instr[31:20]};
-				$display("I can see you! = %d", data2);	
 			end
 		end
 		if (operatorType == CalcOp) begin

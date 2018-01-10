@@ -61,12 +61,15 @@ module cpu();
 		.operatorType(instructionDecode.operatorType),
 		.operatorSubType(instructionDecode.operatorSubType),
 		.operatorFlag(instructionDecode.operatorFlag),
-	
 		.pcChange(reorderBuffer.issueNewPCEnable),
 		.changeData(reorderBuffer.issueNewPC)
 	);
 
-	instructionFetch instructionFetch(.pc(pcControl.pc));
+	instructionFetch instructionFetch(
+		.pc(pcControl.pc),
+		.fetchPulse(pcControl.fetchPulse),
+		.instr_in(dataMemory.instr_out)
+	);
 
 	instructionDecode instructionDecode(
 		.clock(clock),
@@ -198,12 +201,15 @@ module cpu();
 		.clock(clock),
 		.pcNumber(pcControl.pc),
 		.operatorType(instructionDecode.operatorType),
+		.operatorSubType(instructionDecode.operatorSubType),
+		.operatorFlag(instructionDecode.operatorFlag),
 		.robNum(reorderBuffer.space),
 		.data1(regfile.data1),
 		.data2(regfile.data2),
 		.q1(regstatus.q1),
 		.q2(regstatus.q2),
-		
+		.offset_in(regfile.offset),
+
 		.CDBiscast(CDBadd.iscast_out),
 		.CDBrobNum(CDBadd.robNum_out),
 		.CDBdata(CDBadd.data_out),
@@ -229,28 +235,13 @@ module cpu();
 		.data(loadUnit.cdbdata)
 	);
 
-	/*dataCache dataCache(
-
-		.clk(clock),
-
-		.readAddr(loadUnit.addr_out),
-		.writeEnable(reorderBuffer.cacheWriteEnable), 
-		.writeAddr(reorderBuffer.cacheWriteAddr),
-		.writeData(reorderBuffer.cacheWriteData), 
-		.writeType(reorderBuffer.cacheWriteType),
-		.writeSubType(reorderBuffer.cacheWriteSubType),
-		.writeSubFlag(reorderBuffer.cacheWriteFlag),
-
-		.memoryReadData(dataMemory.data_out),
-		.memoryReadEnable(dataMemory.readEnable),
-		.memoryWriteDone(dataMemory.writeDone)	
-	);*/
-
 	dataMemory dataMemory(
 		.clock(clock),
 		.loadUnitreadAddr(loadUnit.addr_out),
 		.loadUnitrequest(loadUnit.readEnable),
-
+		
+		.instrequest(instructionFetch.fetchEnable),
+		.instreadAddr(instructionFetch.fetchAddr),
 		.writeAddress(reorderBuffer.memoryWriteAddr),
 		.writeRequest(reorderBuffer.memoryWriteEnable),
 		.writeData(reorderBuffer.memoryWriteData),
@@ -266,25 +257,21 @@ module cpu();
 		.issue_opSubType(instructionDecode.operatorSubType),
 		.issue_opFlag(instructionDecode.operatorFlag),
 		.issue_data2(instructionDecode.data2), 
-		.issue_pc(pcControl.pc), 
 		.issue_destReg(instructionDecode.destreg),	
 		.issueValid(instructionDecode.ROBissueValid),
 		
-		/*request Data*/
 
 		.adderIndexIn(addRS.index), 
 		.loadIndexIn(loadRS.index), 
 		.storeIndexIn(storeRS.index), 
 		.bneIndexIn(bneRS.index),
 	
-		//Provide Index and Address
 		
 		.storeEnable(storeRS.storeEnable), 
 		.storeRobIndex(storeRS.robNum_out), 
 		.storeDest(storeRS.data2_out), 
 		.storeValue(storeRS.data1_out), 
 		
-		//CDB
 		.CDBisCast1(CDBadd.iscast_out), 
 		.CDBrobNum1(CDBadd.robNum_out), 
 		.CDBdata1(CDBadd.data_out),
@@ -294,20 +281,12 @@ module cpu();
 		.CDBdata2(CDBlw.data_out),
 		
 		.statusResult(regstatus.ROBstatus),
-		//Index Provider
+		
 		.cataclysm(instructionFetch.isdone),
 		
 		.bneWriteResult(bneRS.data_out), 
 		.bneWriteEnable(bneRS.bneResultEnable), 
 		.bneWriteIndex(bneRS.robNum_out)
 	);
-
-	/*branchPredictor branchPredictor(
-		.branchWriteEnable(reorderBuffer.branchWriteEnable), 
-		.branchWriteData(reorderBuffer.branchWriteData), 
-		.branchWriteAddr(reorderBuffer.branchWriteAddr),
-		.branchPCReadAddr(pcControl.pc), 
-		.branchROBReadAddr(reorderBuffer.branchAddr)
-	);*/
 
 endmodule

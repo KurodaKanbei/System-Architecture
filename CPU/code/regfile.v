@@ -80,6 +80,7 @@ always @(posedge regEnable) begin
 	if (operatorType == BneOp) begin
 		data1 = mem[reg1];
 		data2 = mem[reg2];
+		offset = data2_in;
 	end
 	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
 		data1 = data1_in;
@@ -108,6 +109,7 @@ always @(posedge ROBwriteEnable) begin
 	if (operatorType == BneOp) begin
 		data1 = mem[reg1];
 		data2 = mem[reg2];
+		offset = data2_in;
 	end
 	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
 		data1 = data1_in;

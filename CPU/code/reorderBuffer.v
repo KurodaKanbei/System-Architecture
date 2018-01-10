@@ -1,5 +1,5 @@
 /*remember to judge the load operator
-  remember to judge the store operator
+  remember to make sure at most one branch operator
  */
 
 `timescale 10ps / 100fs
@@ -44,12 +44,6 @@ module reorderBuffer (
 	output reg[31:0] memoryWriteData, 
 	output reg[31:0] memoryWriteAddr,
 	output reg[2:0] memoryWriteType,
-	
-	output reg[31:0] branchAddr,
-
-	output reg[31:0] branchWriteAddr, 
-	output reg branchWriteEnable, 
-	output reg[1:0] branchWriteData,
 
 	output reg[31:0] issueNewPC,
 	output reg issueNewPCEnable,
@@ -59,7 +53,6 @@ module reorderBuffer (
 	input wire[31:0] storeDest,
 	input wire[31:0] storeValue,
 
-	//CDB
 	input wire CDBisCast1, 
 	input wire[5:0] CDBrobNum1, 
 	input wire[31:0] CDBdata1,
@@ -68,9 +61,7 @@ module reorderBuffer (
 	input wire[5:0] CDBrobNum2,
 	input wire[31:0] CDBdata2,
 
-	//Index Provider
-
-	output wire[5:0] space,
+	output wire[5:0] space, // I think it is ugly
 
 	output reg regWriteEnable,
 	output reg[4:0] regWriteIndex,
@@ -95,7 +86,7 @@ parameter LUIOp = 7'b0110111;
 parameter AUIPCOp = 7'b0010111;
 parameter JALOp = 7'b1101111;
 parameter JALROp = 7'b1100111;
-parameter BneOp = 7'b1100111;
+parameter BneOp = 7'b1100011;
 parameter LoadOp = 7'b0000011;
 parameter StoreOp = 7'b0100011;
 parameter CalcImmOp = 7'b0010011;
@@ -128,7 +119,6 @@ parameter SWOp = 3'b010;
 parameter invalidNum = 6'b010000;
 parameter Exception = 7'bxxxxxxx;
 
-reg[31:0] instAddr[0:15];
 reg[6:0] optype[0:15];
 reg[2:0] opsubtype[0:15];
 reg opflag[0:15];
@@ -136,7 +126,6 @@ reg opflag[0:15];
 reg[31:0] value[0:15];
 reg[31:0] dest[0:15];
 reg ready[0:15];
-reg[1:0] tempPrediction;
 
 reg stall;
 
@@ -149,7 +138,6 @@ initial begin
 	tail = 6'b000000;
 	issueNewPCEnable = 1'b0;
 	regWriteEnable = 1'b0;
-	branchWriteEnable = 1'b0;
 	statusWriteEnable = 1'b0;
 	
 	for (i = 0; i < 15; i = i + 1) begin
@@ -159,7 +147,6 @@ initial begin
 		value[i] = 32'h00000000;
 		dest[i] = 32'h00000000;
 		ready[i] = 1'b0;
-		instAddr[i] = 32'h00000000;
 	end
 	count = 5'b00000;
 	available = 1'b1;
@@ -174,8 +161,8 @@ always @(posedge issueValid) begin
 	statusWriteEnable = 1'b0;
 	optype[tail] = issue_opType;
 	opsubtype[tail] = issue_opSubType;
-	instAddr[tail] = issue_pc;		
 	ready[tail] = 1'b0;
+	$display("type = %b  head = %d tail = %d", optype[tail], head, tail);
 	case(issue_opType)
 		CalcOp, CalcImmOp: begin
 			dest[tail] = {27'b0, issue_destReg};
@@ -184,25 +171,20 @@ always @(posedge issueValid) begin
 			statusWriteEnable = 1'b1;
 		end
 
-		LUIOp: begin
+		LUIOp, AUIPCOp: begin
 			dest[tail] = {27'b0, issue_destReg};
 			statusWriteIndex = issue_destReg;
 			statusWriteData = tail;
 			statusWriteEnable = 1'b1;
 		end
 		
-		AUIPCOp: begin
-		end
 
-		JALOp: begin
+		JALOp, JALROp: begin 
 			dest[tail] = {27'b0, issue_destReg};
 			statusWriteIndex = issue_destReg;
 			statusWriteData = tail;
 			statusWriteEnable = 1'b1;
 			nobranch = 1'b0;
-		end
-
-		JALROp: begin
 		end
 
 		BneOp: begin
@@ -221,7 +203,7 @@ always @(posedge issueValid) begin
 		end
 
 		FenceOp: begin
-		
+			tail = tail - 1;	
 		end
 
 		Exception: begin
@@ -241,11 +223,8 @@ always @(posedge clk) begin
 	issueNewPCEnable = 1'b0;
 	regWriteEnable = 1'b0;
 	statusWriteEnable = 1'b0;
-	branchWriteEnable = 1'b0;
 	issueNewPC = 1'b0;
-	branchAddr = 32'hFFFFFFFF;
 	if (count > 0 && ready[head] == 1'b1) begin
-		//display("optype = %b", optype[head]);
 		case(optype[head]) 
 			CalcOp, CalcImmOp, LUIOp, AUIPCOp: begin
 				statusIndex = dest[head][4:0];
@@ -253,7 +232,6 @@ always @(posedge clk) begin
 				regWriteIndex = dest[head][4:0];
 				regWriteData = value[head];
 				regWriteEnable = 1'b1;
-
 				if (statusResult == head) begin
 					statusWriteIndex = dest[head][4:0];
 					statusWriteData = 5'b10000;
@@ -261,12 +239,22 @@ always @(posedge clk) begin
 				end
 			end
 
-			JALOp: begin
+			JALOp, JALROp: begin
+				statusIndex = dest[head][4:0];
+				#0.01
+				regWriteIndex = dest[head][4:0];
+				regWriteData = pcNumber + 4;
+				regWriteEnable = 1'b1;
+				
+				if (statusResult == head) begin
+					statusWriteIndex = dest[head][4:0];
+					statusWriteData = 5'b10000;
+					statusWriteEnable = 1'b1;
+				end
+				
+				issueNewPC = value[head];
+				issueNewPCEnable = 1'b1;
 				nobranch = 1'b1;
-			end
-			
-			JALROp: begin
-				nobranch = 1'b1;	
 			end
 			
 			LoadOp: begin
@@ -292,20 +280,21 @@ always @(posedge clk) begin
 			end
 
 			BneOp: begin
-
+				issueNewPC = value[head];
+				issueNewPCEnable = 1'b1;
+				nobranch = 1'b1;
 			end
 
 			Exception: begin
-				$display("worldEnd!!!!");
 				worldEnd = 1'b1;
 			end
+
 		endcase
 		head = head + 1;
 		count = count - 1;
 		if (head >= 16) head = 0;
 	end
 	statusWriteEnable = 1'b0;
-	branchWriteEnable = 1'b0;
 	regWriteEnable = 1'b0;
 end
 
@@ -362,7 +351,7 @@ end
 
 always @(posedge storeEnable) begin
 	if (storeRobIndex < 16) begin
-		$display("storeNum %d has been worked out", storeRobIndex);
+		//$display("storeNum %d has been worked out", storeRobIndex);
 		dest[storeRobIndex] = storeDest;
 		value[storeRobIndex] = storeValue;
 		ready[storeRobIndex] = 1'b1;
@@ -373,7 +362,7 @@ always @(posedge CDBisCast1) begin
 	if (CDBrobNum1 < 16) begin
 		value[CDBrobNum1] = CDBdata1;
 		ready[CDBrobNum1] = 1'b1;
-		$display("add&&&&&&&& RobNum %d has worked out!", CDBrobNum1);
+		//$display("add&&&&&&&& RobNum %d has worked out!", CDBrobNum1);
 	end
 end
 
@@ -381,7 +370,7 @@ always @(posedge CDBisCast2) begin
 	if (CDBrobNum2 < 16) begin
 		value[CDBrobNum2] = CDBdata2;
 		ready[CDBrobNum2] = 1'b1;
-		$display("lw&&&&&&& RobNum %d has worked out!", CDBrobNum2);
+		//$display("lw&&&&&&& RobNum %d has worked out!", CDBrobNum2);
 	end
 end
 

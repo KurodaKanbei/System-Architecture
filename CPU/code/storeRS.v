@@ -149,8 +149,7 @@ always @(posedge funcUnitEnable) begin
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin	
 			if (rs[i][87:87] == 1'b0 && breakmark == 1'b0) begin
-			//	$display("************************offset = %d****************************", offset_in);
-				$display("value = %d base = %d offset = %d", data1_tmp, data2_tmp, offset_in);	
+				//$display("value = %d base = %d offset = %d", data1_tmp, data2_tmp, offset_in);	
 				destRob[i] = destRobNum;
 				offset[i] = offset_in;
 				rs[i][87:87] = 1'b1;

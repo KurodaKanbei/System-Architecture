@@ -25,6 +25,7 @@ module bneRS (
 	input wire[31:0] data2,
 	input wire[5:0] q1,
 	input wire[5:0] q2,
+	input wire[31:0] offset_in,
 
 	input wire CDBiscast,
 	input wire[5:0] CDBrobNum,
@@ -46,7 +47,9 @@ module bneRS (
 	input wire funcUnitEnable
 );
 
-parameter bneOp = 7'b1100111;
+parameter bneOp = 7'b1100011;
+parameter JALOp = 7'b1101111;
+parameter JALROp = 7'b1100111;
 parameter invalidNum = 6'b010000;
 parameter BEQOp = 3'b000;
 parameter BNEOp = 3'b001;
@@ -56,6 +59,8 @@ parameter BLTUOp = 3'b110;
 parameter BGEUOp = 3'b111;
 
 reg[93:0] rs[0:3];
+reg[31:0] offset[0:3];
+
 integer i;
 reg breakmark;
 
@@ -95,23 +100,35 @@ end
 
 parameter Taken = 32'b1;
 parameter notTaken = 32'b0;
+reg taken;
 
 always @(posedge clock) begin
+	#50
 	breakmark = 1'b0;
 	bneResultEnable = 1'b0;
 	for (i = 0; i < 4; i = i + 1) begin
-		if (rs[i][93:93] == invalidNum && breakmark == 1'b0) begin
+		if (rs[i][93:93] == 1'b1  && breakmark == 1'b0) begin
 			if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 				rs[i][93:93] = 1'b0;
-				case (rs[i][79:77])
-					BEQOp: if (rs[i][75:44] == rs[i][43:12]) data_out = Taken; else data_out = notTaken;
-					BNEOp: if (rs[i][75:44] == rs[i][43:12]) data_out = notTaken; else data_out = Taken;
-					BLTOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) data_out = Taken; else data_out = notTaken;
-					BGEOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) data_out = notTaken; else data_out = Taken; 
-					BLTUOp:	if (rs[i][75:44] < rs[i][43:12]) data_out = Taken; else data_out = notTaken; 
-					BGEUOp:	if (rs[i][75:44] < rs[i][43:12]) data_out = notTaken; else data_out = Taken;
-					default: ;
-				endcase
+				if (rs[i][86:80] == bneOp) begin
+					$display("opratorsubtype = %b", rs[i][79:77]);
+					case (rs[i][79:77])
+						BEQOp: if (rs[i][75:44] == rs[i][43:12]) taken = Taken; else taken = notTaken;
+						BNEOp: begin
+						if (rs[i][75:44] == rs[i][43:12]) taken = notTaken; else taken = Taken;
+						$display("BNE is here!!!!!!!");
+						end
+						BLTOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) taken = Taken; else taken = notTaken;
+						BGEOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) taken = notTaken; else taken = Taken; 
+						BLTUOp:	if (rs[i][75:44] < rs[i][43:12]) taken = Taken; else taken = notTaken; 
+						BGEUOp:	if (rs[i][75:44] < rs[i][43:12]) taken = notTaken; else taken = Taken;
+					endcase
+					$display("take or not ? = %d", taken);
+					$display("offset = %d", offset[i]);
+					if (taken == Taken) data_out = pcNumber + offset[i] - 4; else data_out = pcNumber; 
+				end else begin
+					if (operatorType == JALOp) data_out = pcNumber + offset[i] - 4; else data_out = rs[i][75:44] + offset[i] - 4;	
+				end
 				robNum_out = rs[i][92:87];
 				bneResultEnable = 1'b1;
 				available = 1'b1;
@@ -127,27 +144,39 @@ reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
-	if (operatorType == bneOp) begin
-		index = q1;
-		#0.01
-		data1_tmp = data1;
-		q1_tmp = q1;
-		if (index < 16 && ready == 1'b1) begin
-			data1_tmp = value;
+	if (operatorType == bneOp || operatorType == JALOp ||| operatorType == JALROp) begin
+		if (operatorType == bneOp || operatorType == JALROp) begin
+			index = q1;
+			#0.01
+			data1_tmp = data1;
+			q1_tmp = q1;
+			if (index < 16 && ready == 1'b1) begin
+				data1_tmp = value;
+				q1_tmp = invalidNum;
+			end
+		end else begin
 			q1_tmp = invalidNum;
+			data1_tmp = 32'h00000000; 
 		end
-		index = q2;
-		#0.01
-		data2_tmp = data2;
-		q2_tmp = data2;
-		if (index < 16 && ready == 1'b1) begin
-			data2_tmp = value;
+		if (operatorType == bneOp) begin
+			index = q2;
+			#0.01
+			data2_tmp = data2;
+			q2_tmp = q2;
+			if (index < 16 && ready == 1'b1) begin
+				data2_tmp = value;
+				q2_tmp = invalidNum;
+			end
+		end else begin
 			q2_tmp = invalidNum;
+			data2_tmp = 32'h00000000;
 		end
 		index = invalidNum;
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0) begin
+				//$display("offset in bneRS = %b", offset_in);
+				offset[i] = offset_in;
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
 				rs[i][86:80] = operatorType;

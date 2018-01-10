@@ -76,13 +76,7 @@ int main(){
 		if(instr=="sw"){
 			cin>>rs2>>rs1>>imm;
 			mem[(reg[rs1]+imm)/4]=reg[rs2];
-			string IM=str(imm,12);/*
-			cerr<<IM.substr(0,7)<<endl;
-			cerr<<str(rs2,5)<<endl;
-			cerr<<str(rs1,5)<<endl;
-			cerr<<"010"<<endl;
-			cerr<<IM.substr(7,5)<<endl;
-			cerr<<"0100011"<<endl;*/
+			string IM=str(imm,12);
 			cout<<IM.substr(0,7)+str(rs2,5)+str(rs1,5)+"010"+IM.substr(7,5)+string("0100011")<<endl;
 		}
 	

@@ -105,10 +105,6 @@ end
 
 always @(posedge funcUnitEnable) begin
 	if (operatorType == loadOp) begin
-		
-		$display("robNum = %d", destRobNum);
-		$display("q = %d", q);
-
 		index = q;
 		#0.01
 		data_tmp = data;

@@ -232,10 +232,6 @@ always @(posedge funcUnitEnable) begin
 			data2_tmp = data2;
 			q2_tmp = invalidNum;
 		end
-		//$display("q1 = %d q2 = %d", q1, q2);
-		//$display("data1_tmp = %d &&&&&&& data2_tmp = %d", data1_tmp, data2_tmp);
-		//$display("q1 = %d", q1);
-		//$display("q2 = %d", q2);
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0)  begin
@@ -244,6 +240,7 @@ always @(posedge funcUnitEnable) begin
 				$display("robNum in addRS = %d", rs[i][92:87]);
 				//$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
+				$display("operatortype = %d", rs[i][86:80]);
 				rs[i][79:77] = operatorSubType;
 				rs[i][76:76] = operatorFlag;
 				rs[i][75:44] = data1_tmp;

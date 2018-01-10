@@ -2,29 +2,31 @@
 
 module instructionFetch (
 	input wire[31:0] pc,
+	input wire fetchPulse,
+
 	output reg[31:0] instr,
-	output reg isdone
+	output reg isdone,
+	
+	input wire[31:0] instr_in,
+	output reg[31:0] fetchAddr,
+	output reg fetchEnable
 ); 
 
-parameter size = 1 << 10;
-reg[31:0] mem [0:size - 1];
-integer i;	
+reg[31:0] mem[0:1000];
 
-initial begin
-	$readmemb("instruction.bin", mem, 0);
-	for (i = 2; i < size; i = i + 1) begin
-		//mem[i] = {mem[i][7:0] | mem[i][15:8] | mem[i][23:16] | mem[i][31:24]};		
-	end
-	isdone = 0;
-end
-
-always @(pc) begin
-	instr = mem[pc];
+always @(posedge fetchPulse) begin
+	fetchEnable = 1'b0;
+	fetchAddr = pc;
+	fetchEnable = 1'b1;
+	#0.01
+	instr = instr_in;
+	$display("instr = %b", instr);
 	if (instr[6:0] == 7'bxxxxxxx) begin
 		isdone = 1'b1;
 	end else begin
 		isdone = 1'b0;
 	end
+	fetchEnable = 1'b0;
 end
 
 endmodule

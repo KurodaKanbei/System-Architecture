@@ -6,57 +6,53 @@
 :vpi_module "vhdl_sys";
 :vpi_module "v2005_math";
 :vpi_module "va_math";
-S_0x7fa9e4604f50 .scope module, "instructionFetch" "instructionFetch" 2 3;
+S_0x7fd599d04860 .scope module, "instructionFetch" "instructionFetch" 2 3;
  .timescale -11 -13;
     .port_info 0 /INPUT 32 "pc"
-    .port_info 1 /OUTPUT 32 "instr"
-    .port_info 2 /OUTPUT 1 "isdone"
-P_0x7fa9e4601400 .param/l "size" 0 2 9, +C4<000000000000000000000000000000010000000000>;
-v0x7fa9e46050b0_0 .var/i "i", 31 0;
-v0x7fa9e46150c0_0 .var "instr", 31 0;
-v0x7fa9e4615160_0 .var "isdone", 0 0;
-v0x7fa9e4615210 .array "mem", 1023 0, 31 0;
-o0x10dc6b098 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
-v0x7fa9e46152a0_0 .net "pc", 31 0, o0x10dc6b098;  0 drivers
-E_0x7fa9e46000c0 .event edge, v0x7fa9e46152a0_0;
-    .scope S_0x7fa9e4604f50;
+    .port_info 1 /INPUT 1 "fetchPulse"
+    .port_info 2 /OUTPUT 32 "instr"
+    .port_info 3 /OUTPUT 1 "isdone"
+    .port_info 4 /INPUT 32 "instr_in"
+    .port_info 5 /OUTPUT 32 "fetchAddr"
+    .port_info 6 /OUTPUT 1 "fetchEnable"
+v0x7fd599d04a70_0 .var "fetchAddr", 31 0;
+v0x7fd599d148f0_0 .var "fetchEnable", 0 0;
+o0x102a5a068 .functor BUFZ 1, C4<z>; HiZ drive
+v0x7fd599d14990_0 .net "fetchPulse", 0 0, o0x102a5a068;  0 drivers
+v0x7fd599d14a20_0 .var "instr", 31 0;
+o0x102a5a0c8 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x7fd599d14ad0_0 .net "instr_in", 31 0, o0x102a5a0c8;  0 drivers
+v0x7fd599d14bc0_0 .var "isdone", 0 0;
+o0x102a5a128 .functor BUFZ 32, C4<zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz>; HiZ drive
+v0x7fd599d14c60_0 .net "pc", 31 0, o0x102a5a128;  0 drivers
+E_0x7fd599d014d0 .event posedge, v0x7fd599d14990_0;
+    .scope S_0x7fd599d04860;
 T_0 ;
-    %vpi_call 2 14 "$readmemb", "instruction.bin", v0x7fa9e4615210, 32'sb00000000000000000000000000000000 {0 0 0};
-    %pushi/vec4 2, 0, 32;
-    %store/vec4 v0x7fa9e46050b0_0, 0, 32;
-T_0.0 ;
-    %load/vec4 v0x7fa9e46050b0_0;
-    %pad/s 42;
-    %cmpi/s 1024, 0, 42;
-    %jmp/0xz T_0.1, 5;
-    %load/vec4 v0x7fa9e46050b0_0;
-    %addi 1, 0, 32;
-    %store/vec4 v0x7fa9e46050b0_0, 0, 32;
-    %jmp T_0.0;
-T_0.1 ;
+    %wait E_0x7fd599d014d0;
     %pushi/vec4 0, 0, 1;
-    %store/vec4 v0x7fa9e4615160_0, 0, 1;
-    %end;
-    .thread T_0;
-    .scope S_0x7fa9e4604f50;
-T_1 ;
-    %wait E_0x7fa9e46000c0;
-    %ix/getv 4, v0x7fa9e46152a0_0;
-    %load/vec4a v0x7fa9e4615210, 4;
-    %store/vec4 v0x7fa9e46150c0_0, 0, 32;
-    %load/vec4 v0x7fa9e46150c0_0;
+    %store/vec4 v0x7fd599d148f0_0, 0, 1;
+    %load/vec4 v0x7fd599d14c60_0;
+    %store/vec4 v0x7fd599d04a70_0, 0, 32;
+    %pushi/vec4 1, 0, 1;
+    %store/vec4 v0x7fd599d148f0_0, 0, 1;
+    %delay 1, 0;
+    %load/vec4 v0x7fd599d14ad0_0;
+    %store/vec4 v0x7fd599d14a20_0, 0, 32;
+    %load/vec4 v0x7fd599d14a20_0;
     %parti/s 7, 0, 2;
     %cmpi/e 127, 127, 7;
-    %jmp/0xz  T_1.0, 4;
+    %jmp/0xz  T_0.0, 4;
     %pushi/vec4 1, 0, 1;
-    %store/vec4 v0x7fa9e4615160_0, 0, 1;
-    %jmp T_1.1;
-T_1.0 ;
+    %store/vec4 v0x7fd599d14bc0_0, 0, 1;
+    %jmp T_0.1;
+T_0.0 ;
     %pushi/vec4 0, 0, 1;
-    %store/vec4 v0x7fa9e4615160_0, 0, 1;
-T_1.1 ;
-    %jmp T_1;
-    .thread T_1, $push;
+    %store/vec4 v0x7fd599d14bc0_0, 0, 1;
+T_0.1 ;
+    %pushi/vec4 0, 0, 1;
+    %store/vec4 v0x7fd599d148f0_0, 0, 1;
+    %jmp T_0;
+    .thread T_0;
 # The file index is used to find the file name in the following table.
 :file_names 3;
     "N/A";

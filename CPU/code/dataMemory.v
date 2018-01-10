@@ -2,10 +2,15 @@
 
 module dataMemory (
 	input wire clock,
+	
 	input wire[31:0] loadUnitreadAddr,
 	input wire loadUnitrequest,
 	output reg[31:0] data_out,
 	
+
+	input wire instrequest,
+	input wire[31:0] instreadAddr,
+	output reg[31:0] instr_out,
 
 	input wire writeRequest,
 	input wire[31:0] writeAddress,
@@ -13,7 +18,8 @@ module dataMemory (
 	input wire[2:0] writeType
 );
 
-reg[7:0] mem[0:1023];
+reg[7:0] mem[0:65536];
+reg[31:0] instr[0:1024];
 
 integer i;
 
@@ -21,18 +27,21 @@ parameter SBOp = 3'b000;
 parameter SHOp = 3'b001;
 parameter SWOp = 3'b010;
 
-initial begin 
-	for (i = 0; i < 1024; i = i + 1) begin
-		mem[i] = {8{1'b0}};
+initial begin
+	$readmemb("instruction.bin", instr, 0);
+	for (i = 0; i < 4096; i = i + 4) begin
+		mem[i] = instr[i >> 2][7:0];
+		mem[i + 1] = instr[i >> 2][15:8];
+		mem[i + 2] = instr[i >> 2][23:16];
+		mem[i + 3] = instr[i >> 2][31:24];
+	end
+	for (i = 4096; i < 65536; i = i + 1) begin
+		mem[i] = 8'b00000000;
 	end
 end
 
 
 always @(posedge writeRequest) begin
-	$display("memory Write is coming!!!!!");
-	$display("Address = %d", writeAddress);
-	$display("Data = %d", writeData);
-	$display("WriteType = %b", writeType);
 	if (writeType == SBOp) begin
 		mem[writeAddress] = writeData[7:0];
 	end
@@ -53,7 +62,11 @@ reg[31:0] readAddr;
 always @(posedge loadUnitrequest) begin
 	readAddr = loadUnitreadAddr;
 	data_out = {mem[readAddr + 3], mem[readAddr + 2], mem[readAddr + 1], mem[readAddr]};
-	$display("load_Unit out = %b", data_out);
+end
+
+always @(posedge instrequest) begin
+	readAddr = instreadAddr;
+	instr_out = {mem[readAddr + 3], mem[readAddr + 2], mem[readAddr + 1], mem[readAddr]};
 end
 
 endmodule
