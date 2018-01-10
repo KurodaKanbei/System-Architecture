@@ -7,6 +7,6 @@ A CPU with Tomasulo Algorithm
 ### load operators
 ### store operators
 
-### jump and branch operator is still not working
+### jump and branch operator has been completed
 
-### branch predictor has been completed
+### branch predictor is not working
