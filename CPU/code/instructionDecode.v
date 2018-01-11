@@ -74,7 +74,6 @@ always @(posedge decodePulse) begin
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			data2 = {{20{instr[31:31]}}, instr[31:20]};	
-			$display("JALR offset = %d", data2 );
 		end
 		if (operatorType == BneOp) begin
 			operatorSubType = instr[14:12];

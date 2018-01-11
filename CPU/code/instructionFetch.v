@@ -20,7 +20,6 @@ always @(posedge fetchPulse) begin
 	fetchEnable = 1'b1;
 	#0.01
 	instr = instr_in;
-	$display("instr = %b", instr);
 	if (instr[6:0] == 7'bxxxxxxx) begin
 		isdone = 1'b1;
 	end else begin

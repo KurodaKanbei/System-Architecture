@@ -162,7 +162,6 @@ always @(posedge issueValid) begin
 	optype[tail] = issue_opType;
 	opsubtype[tail] = issue_opSubType;
 	ready[tail] = 1'b0;
-	$display("type = %b  head = %d tail = %d", optype[tail], head, tail);
 	case(issue_opType)
 		CalcOp, CalcImmOp: begin
 			dest[tail] = {27'b0, issue_destReg};

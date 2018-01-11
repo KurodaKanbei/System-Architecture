@@ -115,17 +115,16 @@ always @(posedge funcUnitEnable) begin
 		end
 		index = invalidNum;
 		breakmark = 1'b0;
-		$display("RobNum in loadRS**************************** = %d", destRobNum);
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][55:55] == 1'b0 && breakmark == 1'b0) begin
 
 				robNum[i] = destRobNum;
 				offset[i] = offset_in;
-				$display("I am coming into loadRS!!!!");
+				/*$display("I am coming into loadRS!!!!");
 				$display("destRobNum is = %d", robNum[i]);
 				$display("offset_is = %d", offset[i]);
 				$display("dependent = %d", q_tmp);
-				$display("position = %d", data_tmp);
+				$display("position = %d", data_tmp);*/
 				rs[i][55:55] = 1'b1;
 				rs[i][48:42] = operatorType;
 				rs[i][41:39] = operatorSubType;

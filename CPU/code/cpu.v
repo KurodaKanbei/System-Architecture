@@ -26,7 +26,7 @@ module cpu();
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
 	
-		#3200
+		#40000
 		for (i = 0; i <= 8; i = i + 1) begin
 			$display("reg[%d] = %h", i, regfile.mem[i]);
 		end

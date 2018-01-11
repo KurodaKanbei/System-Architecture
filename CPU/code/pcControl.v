@@ -41,7 +41,6 @@ always @(posedge clock) begin
 	if (available == 1) begin
 		fetchPulse = 1'b0;
 		pc = pc + 4;
-		$display("PCnumber = %d", pc);
 		fetchPulse = 1'b1;
 		#1
 		decodePulse = 1'b0;
