@@ -31,20 +31,8 @@ parameter BneOp = 7'b1100011;
 parameter LoadOp = 7'b0000011;
 parameter StoreOp = 7'b0100011;
 parameter FenceOp = 7'b0001111;
-parameter BEQOp = 3'b000;
-parameter BNEOp = 3'b001;
-parameter BLTOp = 3'b100;
-parameter BGEOp = 3'b101;
-parameter BLTUOp = 3'b110;
-parameter BGEUOp = 3'b111;
-parameter LBOp = 3'b000;
-parameter LHOp = 3'b001;
-parameter LWOp = 3'b010;
-parameter LBUOp = 3'b100;
-parameter LHUOp = 3'b101;
-parameter SBOp = 3'b000;
-parameter SHOp = 3'b001;
-parameter SWOp = 3'b010;
+parameter JALOp = 7'b1101111;
+parameter JALROp = 7'b1100111;
 parameter LUIOp = 7'b0110111;
 parameter AUIPCOp = 7'b0010111;
 
@@ -83,16 +71,22 @@ always @(posedge regEnable) begin
 		offset = data2_in;
 	end
 	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
-		data1 = data1_in;
-		data2 = data2_in;
+		offset = data2_in;
+	end
+	if (operatorType == JALOp) begin
+		offset = data2_in;	
+	end
+	if (operatorType == JALROp) begin
+		data1 = mem[reg1];
+		offset = data2_in;
 	end
 end
 
 always @(posedge ROBwriteEnable) begin
-	$display("ROB -> regfile:Index %d", ROBwriteIndex);
-	$display("ROB -> regfile:Data %d", ROBwriteData);
-	mem[ROBwriteIndex] = ROBwriteData;
-	offset = 0;
+	//$display("ROB -> regfile:Index %d", ROBwriteIndex);
+	//$display("ROB -> regfile:Data %d", ROBwriteData);
+	if (ROBwriteIndex > 0) mem[ROBwriteIndex] = ROBwriteData;
+	/*offset = 0;
 	if (operatorType == CalcImmOp) begin
 		data1 = mem[reg1];
 		data2 = data2_in;
@@ -114,7 +108,7 @@ always @(posedge ROBwriteEnable) begin
 	if (operatorType == LUIOp || operatorType == AUIPCOp) begin
 		data1 = data1_in;
 		data2 = data2_in;
-	end
+	end*/
 end
 
 endmodule

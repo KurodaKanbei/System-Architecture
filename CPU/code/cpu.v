@@ -11,39 +11,44 @@
 `include "storeRS.v"
 `include "bneRS.v"
 `include "CDB.v"
-`include "dataCache.v"
 `include "dataMemory.v"
 `include "reorderBuffer.v"
-`include "branchPredictor.v"
 
 module cpu();
 	reg clock;
 	wire exception;
 	integer cycle;
+	integer i, j, addr;
 	
 	initial begin
 		cycle = 0;
 		clock = 1'b0;
 		$dumpfile("cpu.vcd");
 		$dumpvars(2);
+	
+		#20000
+		for (i = 0; i < 8; i = i + 1) begin
+			$display("reg[%d] = %h", i, regfile.mem[i]);
+		end
+		$finish;
 	end
 	
 	always #100 begin
 		clock = ~clock;
+
 		if (clock == 0) cycle = cycle + 1;
 	end
 	
 	assign exception = reorderBuffer.worldEnd;
 	
-	integer i, j, addr;
 
 	always @(posedge exception) begin
 		for (i = 0; i < 8; i = i + 1) begin
-			$display("reg[%d] = %d", i, regfile.mem[i]);
+			$display("reg[%d] = %h", i, regfile.mem[i]);
 		end
 		
-		for (i = 0; i < 32; i = i + 1) begin
-			$display("mem[%d] = %d", i, dataMemory.mem[i]);
+		for (i = 0 + 4098; i < 32 + 4096; i = i + 1) begin
+			$display("mem[%d] = %h", i, dataMemory.mem[i]);
 		end
 		$finish;
 		
@@ -118,7 +123,8 @@ module cpu();
 		.data2(regfile.data2),
 		.q1(regstatus.q1),
 		.q2(regstatus.q2),
-		
+		.offset_in(regfile.offset),
+
 		.CDBiscast(CDBadd.iscast_out),
 		.CDBrobNum(CDBadd.robNum_out),
 		.CDBdata(CDBadd.data_out),

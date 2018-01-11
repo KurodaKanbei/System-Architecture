@@ -28,13 +28,14 @@ parameter SHOp = 3'b001;
 parameter SWOp = 3'b010;
 
 initial begin
-	$readmemb("instruction.bin", instr, 0);
+	$readmemh("instr.bin", instr, 0);
 	for (i = 0; i < 4096; i = i + 4) begin
 		mem[i] = instr[i >> 2][7:0];
 		mem[i + 1] = instr[i >> 2][15:8];
 		mem[i + 2] = instr[i >> 2][23:16];
 		mem[i + 3] = instr[i >> 2][31:24];
 	end
+	$display("mem[3] = %b", mem[3]);
 	for (i = 4096; i < 65536; i = i + 1) begin
 		mem[i] = 8'b00000000;
 	end
@@ -66,7 +67,7 @@ end
 
 always @(posedge instrequest) begin
 	readAddr = instreadAddr;
-	instr_out = {mem[readAddr + 3], mem[readAddr + 2], mem[readAddr + 1], mem[readAddr]};
+	instr_out = {mem[readAddr], mem[readAddr + 1], mem[readAddr + 2], mem[readAddr + 3]};
 end
 
 endmodule

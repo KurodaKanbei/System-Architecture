@@ -39,21 +39,19 @@ always @(ROBindex) begin
 end
 
 always @(posedge writeEnable) begin
-	if (writeIndex > 0) begin
-		status[writeIndex] = writedata;
-		if (reg1 < 32) begin
-			q1 = status[reg1];
-		end 
-		else q1 = invalidNum;
-		if (reg2 < 32) begin
-			q2 = status[reg2];
-		end
-		else q2 = invalidNum;
-		if (ROBindex < 16) begin
-			ROBstatus = status[ROBindex];
-		end
-		else ROBstatus = invalidNum;
+	if (writeIndex > 0) status[writeIndex] = writedata;
+	if (reg1 < 32) begin
+		q1 = status[reg1];
+	end 
+	else q1 = invalidNum;
+	if (reg2 < 32) begin
+		q2 = status[reg2];
 	end
+	else q2 = invalidNum;
+	if (ROBindex < 16) begin
+		ROBstatus = status[ROBindex];
+	end
+	else ROBstatus = invalidNum;
 end
 
 always @(posedge regStatusEnable) begin

@@ -63,25 +63,24 @@ always @(posedge decodePulse) begin
 		end
 		if (operatorType == AUIPCOp) begin
 			destreg = instr[11:7];	
-			data2 = {instr[31:12], 12'b0} + pcNumber[31:0];		
+			data2 = {instr[31:12], 12'b0};		
 		end
 		if (operatorType == JALOp) begin
 			destreg = instr[11:7];	
-			data2 = {{13{instr[31:31]}}, instr[19:12], instr[20:20], instr[30:21]};		
+			data2 = {{12{instr[31:31]}}, instr[19:12], instr[20:20], instr[30:21], 1'b0};		
 		end
 		if (operatorType == JALROp) begin
 			destreg = instr[11:7];	
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
-			data2 = {{20{instr[31:31]}}, instr[31:20]};		
+			data2 = {{20{instr[31:31]}}, instr[31:20]};	
+			$display("JALR offset = %d", data2 );
 		end
 		if (operatorType == BneOp) begin
-			$display("instruction = %b", instr);
 			operatorSubType = instr[14:12];
 			reg1 = instr[19:15];
 			reg2 = instr[24:20];
-			data2 = {{21{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8]};
-			$display("very ok = %d", instr);
+			data2 = {{20{instr[31:31]}}, instr[7:7], instr[30:25], instr[11:8], 1'b0};
 		end
 		if (operatorType == LoadOp) begin
 			destreg = instr[11:7];

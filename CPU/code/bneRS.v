@@ -111,20 +111,14 @@ always @(posedge clock) begin
 			if (rs[i][11:6] == invalidNum && rs[i][5:0] == invalidNum) begin
 				rs[i][93:93] = 1'b0;
 				if (rs[i][86:80] == bneOp) begin
-					$display("opratorsubtype = %b", rs[i][79:77]);
 					case (rs[i][79:77])
 						BEQOp: if (rs[i][75:44] == rs[i][43:12]) taken = Taken; else taken = notTaken;
-						BNEOp: begin
-						if (rs[i][75:44] == rs[i][43:12]) taken = notTaken; else taken = Taken;
-						$display("BNE is here!!!!!!!");
-						end
+						BNEOp: if (rs[i][75:44] == rs[i][43:12]) taken = notTaken; else taken = Taken;
 						BLTOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) taken = Taken; else taken = notTaken;
 						BGEOp: if ($signed(rs[i][75:44]) < $signed(rs[i][43:12])) taken = notTaken; else taken = Taken; 
 						BLTUOp:	if (rs[i][75:44] < rs[i][43:12]) taken = Taken; else taken = notTaken; 
-						BGEUOp:	if (rs[i][75:44] < rs[i][43:12]) taken = notTaken; else taken = Taken;
+						BGEUOp: if (rs[i][75:44] < rs[i][43:12]) taken = notTaken; else taken = Taken;
 					endcase
-					$display("take or not ? = %d", taken);
-					$display("offset = %d", offset[i]);
 					if (taken == Taken) data_out = pcNumber + offset[i] - 4; else data_out = pcNumber; 
 				end else begin
 					if (operatorType == JALOp) data_out = pcNumber + offset[i] - 4; else data_out = rs[i][75:44] + offset[i] - 4;	
@@ -144,7 +138,7 @@ reg[31:0] data2_tmp;
 reg[5:0] q2_tmp;
 
 always @(posedge funcUnitEnable) begin
-	if (operatorType == bneOp || operatorType == JALOp ||| operatorType == JALROp) begin
+	if (operatorType == bneOp || operatorType == JALOp || operatorType == JALROp) begin
 		if (operatorType == bneOp || operatorType == JALROp) begin
 			index = q1;
 			#0.01
@@ -154,6 +148,8 @@ always @(posedge funcUnitEnable) begin
 				data1_tmp = value;
 				q1_tmp = invalidNum;
 			end
+			//$display("q1 = %d", q1_tmp);
+			//$display("data1 = %d", data1_tmp);
 		end else begin
 			q1_tmp = invalidNum;
 			data1_tmp = 32'h00000000; 
@@ -175,7 +171,6 @@ always @(posedge funcUnitEnable) begin
 		breakmark = 1'b0;
 		for (i = 0; i < 4; i = i + 1) begin
 			if (rs[i][93:93] == 1'b0 && breakmark == 1'b0) begin
-				//$display("offset in bneRS = %b", offset_in);
 				offset[i] = offset_in;
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
