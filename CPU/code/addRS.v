@@ -240,21 +240,13 @@ always @(posedge funcUnitEnable) begin
 				rs[i][93:93] = 1'b1;
 				rs[i][92:87] = robNum;
 				offset[i] = offset_in;
-				//$display("lui offset_in %h", offset_in);
-				//$display("robNum in addRS = %d", rs[i][92:87]);
-				//$display("reservation index = %d", i);
 				rs[i][86:80] = operatorType;
-				//$display("operatortype = %d", rs[i][86:80]);
 				rs[i][79:77] = operatorSubType;
 				rs[i][76:76] = operatorFlag;
 				rs[i][75:44] = data1_tmp;
 				rs[i][43:12] = data2_tmp;
-				//$display("reservation data1 = %d", rs[i][75:44]);
-				//$display("reservation data2 = %d", rs[i][43:12]);
 				rs[i][11:6] = q1_tmp;
 				rs[i][5:0] = q2_tmp;
-				//$display("reservation q1 = %d", rs[i][11:6]);
-				//$display("reservation q2 = %d", rs[i][5:0]);
 				breakmark = 1'b1;
 			end
 		end

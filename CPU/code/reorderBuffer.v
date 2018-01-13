@@ -1,6 +1,3 @@
-/*remember to judge the load operator
-  remember to make sure at most one branch operator
- */
 
 `timescale 10ps / 100fs
 
@@ -350,7 +347,6 @@ end
 
 always @(posedge storeEnable) begin
 	if (storeRobIndex < 16) begin
-		//$display("storeNum %d has been worked out", storeRobIndex);
 		dest[storeRobIndex] = storeDest;
 		value[storeRobIndex] = storeValue;
 		ready[storeRobIndex] = 1'b1;
@@ -361,7 +357,6 @@ always @(posedge CDBisCast1) begin
 	if (CDBrobNum1 < 16) begin
 		value[CDBrobNum1] = CDBdata1;
 		ready[CDBrobNum1] = 1'b1;
-		//$display("add&&&&&&&& RobNum %d has worked out!", CDBrobNum1);
 	end
 end
 
@@ -369,7 +364,6 @@ always @(posedge CDBisCast2) begin
 	if (CDBrobNum2 < 16) begin
 		value[CDBrobNum2] = CDBdata2;
 		ready[CDBrobNum2] = 1'b1;
-		//$display("lw&&&&&&& RobNum %d has worked out!", CDBrobNum2);
 	end
 end
 

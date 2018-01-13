@@ -92,7 +92,6 @@ always @(posedge clock) begin
 				data_out = rs[i][37:6] + offset[i];
 				type_out = rs[i][41:39];
 				robNum_out = robNum[i];
-				//$display("loadRS robNum_out = %d", robNum[i]);
 				rs[i][55:55] = 1'b0;
 				available = 1'b1;
 				breakmark = 1'b1;
@@ -120,11 +119,6 @@ always @(posedge funcUnitEnable) begin
 
 				robNum[i] = destRobNum;
 				offset[i] = offset_in;
-				/*$display("I am coming into loadRS!!!!");
-				$display("destRobNum is = %d", robNum[i]);
-				$display("offset_is = %d", offset[i]);
-				$display("dependent = %d", q_tmp);
-				$display("position = %d", data_tmp);*/
 				rs[i][55:55] = 1'b1;
 				rs[i][48:42] = operatorType;
 				rs[i][41:39] = operatorSubType;

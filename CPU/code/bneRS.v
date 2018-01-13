@@ -148,8 +148,6 @@ always @(posedge funcUnitEnable) begin
 				data1_tmp = value;
 				q1_tmp = invalidNum;
 			end
-			//$display("q1 = %d", q1_tmp);
-			//$display("data1 = %d", data1_tmp);
 		end else begin
 			q1_tmp = invalidNum;
 			data1_tmp = 32'h00000000; 
