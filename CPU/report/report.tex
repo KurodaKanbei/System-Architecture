@@ -1,0 +1,40 @@
+\documentclass{article}
+\usepackage{ctex}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{amstext}
+\usepackage{amssymb}
+
+\title{体系结构大作业报告}
+\author{2016ACM班~~~~范裕达}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{摘要}
+本次体系结构的大作业是写一个RISC-V框架下的CPU，我选择了使用上课所学的Tomasulo算法，并实现了基本的指令集。我的代码都是在 gnu-tool-chain 和 Icarus Verilog version 10.1的框架下进行编译运行，输出的波形可以通过生成的vcd用gtkwave查看。
+
+\section{框架简述}
+我的代码使用的经典的issue-execution-commit结构，采用的是乱序执行和顺序写回的策略，对于分支跳转语句采用的是stall的方法。
+
+\subsection{issue}
+	issue阶段包括了从内存fetch指令,并且进行解码，从而发射到对应的保留站和ROB里，并且获得该条指令在ROB里的位置，并且使用这个位置来进行renaming。ROB在这个阶段需要把这个指令要占用的寄存器地址发射出去，在regstatus里打上标记。
+
+\subsection{execution}
+	execution阶段主要是各保留站在工作，在时钟周期开始的时候，各保留站检查一下站内的指令，如果发现有一条指令ready了，就把它进行运算，并把所得的结果和其在ROB中的位置一同广播出去。一共有两个CDB，一个是给Add运算使用的，一个是给Load运算使用的，对于Store和Bne运算，则不需要广播，直接传输到ROB就行。同时各保留站时刻保持监听CDB总线，如果有广播的数据是自己需要的，就把它进行站内的更新。
+
+\subsection{commit}
+	commit阶段基本都是ROB在工作，主要负责各指令的写回。ROB是本框架中唯一一个有权限对寄存器和内存进行修改的元件。对于跳转指令，ROB则要发射信号给pcControl，使其更改pc值。同时对于有寄存器写入的指令，ROB将于regstatus进行交互，以判断是否将对应的占用的标记去除。
+	
+\section{具体功能介绍}
+\subsection{regfile regstatus}
+这两个元件主要负责对寄存器的读写，尤其是标示寄存器的占用情况，对于正在被写入的寄存器，它会被打上tag表示正在由哪条指令写入（以ROBindex标示），如果未被占用，则会用invalid来标志。
+
+\subsection{reorderBuffer}
+ROB有几大功能：一是应对各个运算元件的数据的request，因为一个寄存器正在被写入而且对应的指令已经不在保留站里了，那么对应的数据一定在ROB里面。二是接收各运算元件的结果，对队列中的指令进行更新。三是写回指令，更重要的是更新pc，并且决定是否进行stall和跳转，具有控制的功能。
+\section{不足与困难}
+	一是如何保证对内存的操作是有序的，防止RAW的anti-hazard。解决方法有两种，一是对内存操作也开一个buffer，保证有序，二是保证ROB里有Store的时候，Load指令不会上线。
+	
+	二是如何应对JALR操作，因为该指令还涉及到了对寄存器的写入，在我的框架中我把它扔进了加法保留站，从而对分支预测带来了不小的麻烦。后来经过助教的指点，发现可以直接在Decoder阶段就进行跳转，同时将它翻译成一个Li指令，而不经过ROB的阶段。
+\end{document}
